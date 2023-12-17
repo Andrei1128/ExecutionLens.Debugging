@@ -30,11 +30,9 @@ public static partial class ServiceCollectionExtensions
             provider =>
             {
                 var proxyGenerator = provider.GetRequiredService<ProxyGenerator>();
-                var logInterceptor = provider.GetRequiredService<IInterceptorService>();
+                var interceptorService = provider.GetRequiredService<IInterceptorService>();
                 var implementationInstance = provider.GetRequiredService<TImplementation>();
-                TService? proxy = null;
-                proxy = proxyGenerator.CreateInterfaceProxyWithTarget<TService>(implementationInstance, logInterceptor);
-                return proxy;
+                return proxyGenerator.CreateInterfaceProxyWithTarget<TService>(implementationInstance, interceptorService);
             },
             lifetime
         ));
@@ -46,7 +44,7 @@ public static partial class ServiceCollectionExtensions
         services.AddScoped<IInterceptorService, InterceptorService>();
         services.AddScoped<ILogService, LogService>();
         services.AddScoped<IWriteService, WriteService>();
-        services.AddScoped<StructuredLoggingAttribute>();
+        services.AddScoped<LogAttribute>();
         return new LoggerConfiguration();
     }
 }

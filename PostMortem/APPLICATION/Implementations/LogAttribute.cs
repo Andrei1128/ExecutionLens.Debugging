@@ -6,7 +6,7 @@ using PostMortem.DOMAIN.Utilities;
 namespace PostMortem.APPLICATION.Implementations;
 
 [AttributeUsage(AttributeTargets.Method)]
-public class StructuredLoggingAttribute(ILogService _logService) : Attribute, IAsyncActionFilter
+public class LogAttribute(ILogService _logService) : Attribute, IAsyncActionFilter
 {
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
@@ -16,9 +16,15 @@ public class StructuredLoggingAttribute(ILogService _logService) : Attribute, IA
 
         var executedAction = await next();
 
-        _logService.AddLogExit(MethodExit.Create(executedAction.Result));
-
-        if (!LoggerConfiguration.IsLoggingOnlyOnExceptions || executedAction.Exception is not null)
+        if (executedAction.Exception is not null)
+        {
+            _logService.AddLogExit(MethodExit.Create(executedAction.Exception));
             _logService.Write();
+        }
+        else if (!LoggerConfiguration.IsLoggingOnlyOnExceptions)
+        {
+            _logService.AddLogExit(MethodExit.Create(executedAction.Result));
+            _logService.Write();
+        }
     }
 }

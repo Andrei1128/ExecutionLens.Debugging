@@ -10,7 +10,7 @@ namespace PostMortemTests.Controllers
     public class OrderController(IOrderService _orderService) : ControllerBase
     {
         [HttpPost]
-        [ServiceFilter(typeof(StructuredLoggingAttribute))]
+        [ServiceFilter(typeof(LogAttribute))]
         public async Task<IActionResult> Order([FromBody] OrderDTO orderDto)
         {
             try

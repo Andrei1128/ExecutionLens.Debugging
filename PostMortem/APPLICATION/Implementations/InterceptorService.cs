@@ -7,7 +7,7 @@ namespace PostMortem.APPLICATION.Implementations;
 
 internal class InterceptorService(ILogService _logService) : IInterceptorService
 {
-    public async void Intercept(IInvocation invocation)
+    public void Intercept(IInvocation invocation)
     {
         if (!LogManager.IsLogging)
         {
