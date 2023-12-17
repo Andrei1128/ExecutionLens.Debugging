@@ -1,7 +1,7 @@
 ﻿using Castle.DynamicProxy;
 using Microsoft.AspNetCore.Mvc;
 
-namespace PostMortem.DOMAIN.Models;
+namespace PostMortem.SHARED.DOMAIN.Models;
 public class MethodExit
 {
     public DateTime Time { get; private set; } = DateTime.Now;

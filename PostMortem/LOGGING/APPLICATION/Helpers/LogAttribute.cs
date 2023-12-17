@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc.Filters;
-using PostMortem.APPLICATION.Contracts;
-using PostMortem.DOMAIN.Models;
-using PostMortem.DOMAIN.Utilities;
+using PostMortem.LOGGING.APPLICATION.Contracts;
+using PostMortem.LOGGING.DOMAIN.Utilities;
+using PostMortem.SHARED.DOMAIN.Models;
 
-namespace PostMortem.APPLICATION.Implementations;
+namespace PostMortem.LOGGING.APPLICATION.Helpers;
 
 [AttributeUsage(AttributeTargets.Method)]
 public class LogAttribute(ILogService _logService) : Attribute, IAsyncActionFilter

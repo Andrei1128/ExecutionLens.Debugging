@@ -1,4 +1,4 @@
-﻿namespace PostMortem.DOMAIN.Utilities;
+﻿namespace PostMortem.LOGGING.DOMAIN.Utilities;
 public class LoggerConfiguration
 {
     public static bool IsSupressingExceptions { get; private set; } = false;

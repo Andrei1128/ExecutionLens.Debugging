@@ -1,8 +1,8 @@
 ﻿using Castle.DynamicProxy;
 using Microsoft.AspNetCore.Mvc.Filters;
-using PostMortem.DOMAIN.Utilities;
+using PostMortem.LOGGING.DOMAIN.Utilities;
 
-namespace PostMortem.DOMAIN.Models;
+namespace PostMortem.SHARED.DOMAIN.Models;
 public class MethodEntry
 {
     public DateTime Time { get; private set; } = DateTime.Now;

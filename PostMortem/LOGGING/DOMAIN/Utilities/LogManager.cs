@@ -1,4 +1,4 @@
-﻿namespace PostMortem.DOMAIN.Utilities;
+﻿namespace PostMortem.LOGGING.DOMAIN.Utilities;
 public class LogManager
 {
     public static bool IsLogging;

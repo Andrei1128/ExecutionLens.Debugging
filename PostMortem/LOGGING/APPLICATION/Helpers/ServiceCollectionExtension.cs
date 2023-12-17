@@ -1,10 +1,10 @@
 ﻿using Castle.DynamicProxy;
 using Microsoft.Extensions.DependencyInjection;
-using PostMortem.APPLICATION.Contracts;
-using PostMortem.APPLICATION.Implementations;
-using PostMortem.DOMAIN.Utilities;
+using PostMortem.LOGGING.APPLICATION.Contracts;
+using PostMortem.LOGGING.APPLICATION.Implementations;
+using PostMortem.LOGGING.DOMAIN.Utilities;
 
-namespace PostMortem.APPLICATION.Helpers;
+namespace PostMortem.LOGGING.APPLICATION.Helpers;
 public static partial class ServiceCollectionExtensions
 {
     public static IServiceCollection AddLoggedScoped<TService, TImplementation>(this IServiceCollection services)

@@ -1,6 +1,6 @@
-﻿using PostMortem.DOMAIN.Models;
+﻿using PostMortem.SHARED.DOMAIN.Models;
 
-namespace PostMortem.APPLICATION.Contracts;
+namespace PostMortem.LOGGING.APPLICATION.Contracts;
 
 public interface ILogService
 {

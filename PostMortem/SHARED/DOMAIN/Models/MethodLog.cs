@@ -1,4 +1,4 @@
-﻿namespace PostMortem.DOMAIN.Models;
+﻿namespace PostMortem.SHARED.DOMAIN.Models;
 
 public class MethodLog
 {

@@ -1,7 +1,7 @@
-﻿using PostMortem.APPLICATION.Contracts;
-using PostMortem.DOMAIN.Models;
+﻿using PostMortem.LOGGING.APPLICATION.Contracts;
+using PostMortem.SHARED.DOMAIN.Models;
 
-namespace PostMortem.APPLICATION.Implementations;
+namespace PostMortem.LOGGING.APPLICATION.Implementations;
 
 internal class LogService(IWriteService _writeService) : ILogService
 {

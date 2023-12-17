@@ -1,4 +1,4 @@
-using PostMortem.APPLICATION.Helpers;
+using PostMortem.LOGGING.APPLICATION.Helpers;
 using PostMortemTests.Helpers;
 using PostMortemTests.Repositories;
 using PostMortemTests.Services;
