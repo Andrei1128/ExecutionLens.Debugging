@@ -1,5 +1,5 @@
-﻿using Logging.APPLICATION.Contracts;
-using Newtonsoft.Json;
+﻿using Common.DOMAIN.Utilities;
+using Logging.APPLICATION.Contracts;
 using PostMortem.SHARED.DOMAIN.Models;
 
 namespace Logging.APPLICATION.Implementations;
@@ -7,12 +7,7 @@ internal class WriteService : IWriteService
 {
     public void Write(MethodLog log)
     {
-        var jsonSettings = new JsonSerializerSettings
-        {
-            TypeNameHandling = TypeNameHandling.All
-        };
-
-        string serializedLog = JsonConvert.SerializeObject(log, jsonSettings);
+        string serializedLog = LogSerializer.Serialize(log);
 
         string filePath = "..\\PostMortem\\logs";
 

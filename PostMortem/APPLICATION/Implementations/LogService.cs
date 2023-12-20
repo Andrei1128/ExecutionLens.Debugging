@@ -1,4 +1,5 @@
 ﻿using Logging.APPLICATION.Contracts;
+using Logging.DOMAIN.Utilities;
 using PostMortem.SHARED.DOMAIN.Models;
 
 namespace Logging.APPLICATION.Implementations;
@@ -12,7 +13,7 @@ internal class LogService(IWriteService _writeService) : ILogService
     {
         bool isInRoot = Current is null;
 
-        Current = MethodLog.Create(logEntry);
+        Current = MethodLogFactory.Create(logEntry);
 
         if (Root is null)
         {
@@ -33,7 +34,7 @@ internal class LogService(IWriteService _writeService) : ILogService
     {
         CallStack.Pop();
 
-        Current!.SetExit(logExit);
+        Current!.Exit = logExit;
 
         if (CallStack.TryPeek(out MethodLog? current))
             Current = current;

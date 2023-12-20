@@ -1,7 +1,6 @@
 ﻿using Logging.APPLICATION.Contracts;
 using Logging.DOMAIN.Utilities;
 using Microsoft.AspNetCore.Mvc.Filters;
-using PostMortem.SHARED.DOMAIN.Models;
 
 namespace Logging.APPLICATION.Helpers;
 
@@ -12,18 +11,18 @@ public class LogAttribute(ILogService _logService) : Attribute, IAsyncActionFilt
     {
         LogManager.StartLogging();
 
-        _logService.AddLogEntry(MethodEntry.Create(context));
+        _logService.AddLogEntry(MethodEntryFactory.Create(context));
 
         var executedAction = await next();
 
         if (executedAction.Exception is not null)
         {
-            _logService.AddLogExit(MethodExit.Create(executedAction.Exception));
+            _logService.AddLogExit(MethodExitFactory.Create(executedAction.Exception));
             _logService.Write();
         }
         else if (!LoggerConfiguration.IsLoggingOnlyOnExceptions)
         {
-            _logService.AddLogExit(MethodExit.Create(executedAction.Result));
+            _logService.AddLogExit(MethodExitFactory.Create(executedAction.Result));
             _logService.Write();
         }
     }

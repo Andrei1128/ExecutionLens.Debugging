@@ -1,7 +1,6 @@
 ﻿using Castle.DynamicProxy;
 using Logging.APPLICATION.Contracts;
 using Logging.DOMAIN.Utilities;
-using PostMortem.SHARED.DOMAIN.Models;
 
 namespace Logging.APPLICATION.Implementations;
 
@@ -16,16 +15,16 @@ internal class InterceptorService(ILogService _logService) : IInterceptorService
         else
             try
             {
-                _logService.AddLogEntry(MethodEntry.Create(invocation));
+                _logService.AddLogEntry(MethodEntryFactory.Create(invocation));
 
                 invocation.Proceed();
 
-                _logService.AddLogExit(MethodExit.Create(invocation));
+                _logService.AddLogExit(MethodExitFactory.Create(invocation));
 
             }
             catch (Exception ex)
             {
-                _logService.AddLogExit(MethodExit.Create(ex));
+                _logService.AddLogExit(MethodExitFactory.Create(ex));
 
                 if (!LoggerConfiguration.IsSupressingExceptions)
                 {
