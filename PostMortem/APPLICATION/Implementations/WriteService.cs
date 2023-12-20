@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json;
-using PostMortem.LOGGING.APPLICATION.Contracts;
+﻿using Logging.APPLICATION.Contracts;
+using Newtonsoft.Json;
 using PostMortem.SHARED.DOMAIN.Models;
 
-namespace PostMortem.LOGGING.APPLICATION.Implementations;
+namespace Logging.APPLICATION.Implementations;
 internal class WriteService : IWriteService
 {
     public void Write(MethodLog log)

@@ -1,5 +1,5 @@
+using Logging.APPLICATION.Helpers;
 using Microsoft.AspNetCore.Mvc;
-using PostMortem.LOGGING.APPLICATION.Helpers;
 using PostMortemTests.Models;
 using PostMortemTests.Services;
 

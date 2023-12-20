@@ -1,9 +1,9 @@
 ﻿using Castle.DynamicProxy;
-using PostMortem.LOGGING.APPLICATION.Contracts;
-using PostMortem.LOGGING.DOMAIN.Utilities;
+using Logging.APPLICATION.Contracts;
+using Logging.DOMAIN.Utilities;
 using PostMortem.SHARED.DOMAIN.Models;
 
-namespace PostMortem.LOGGING.APPLICATION.Implementations;
+namespace Logging.APPLICATION.Implementations;
 
 internal class InterceptorService(ILogService _logService) : IInterceptorService
 {

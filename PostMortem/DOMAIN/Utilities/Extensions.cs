@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Abstractions;
 
-namespace PostMortem.LOGGING.DOMAIN.Utilities;
+namespace Logging.DOMAIN.Utilities;
 
 public static class Extensions
 {

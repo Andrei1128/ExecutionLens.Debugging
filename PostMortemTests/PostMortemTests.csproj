@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PostMortem\PostMortem.csproj" />
+    <ProjectReference Include="..\PostMortem\Logging.csproj" />
   </ItemGroup>
 
 </Project>

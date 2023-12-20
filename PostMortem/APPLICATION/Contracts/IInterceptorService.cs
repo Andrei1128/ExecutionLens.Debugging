@@ -1,6 +1,6 @@
 ﻿using Castle.DynamicProxy;
 
-namespace PostMortem.LOGGING.APPLICATION.Contracts;
+namespace Logging.APPLICATION.Contracts;
 
 public interface IInterceptorService : IInterceptor
 {
