@@ -1,6 +1,7 @@
 ﻿using Castle.DynamicProxy;
 using Debugging.APPLICATION.Contracts;
-using Debugging.DOMAIN.Models;
+using Debugging.APPLICATION.Helpers;
+using Debugging.DOMAIN.Utilities;
 using Moq;
 using PostMortem.SHARED.DOMAIN.Models;
 using System.Reflection;
@@ -12,7 +13,7 @@ internal class ReflectionService : IReflectionService
     private readonly ProxyGenerator proxyGenerator = new();
     public object CreateInstance(MethodLog log)
     {
-        Type classType = Type.GetType(log.Entry.Class) ?? ;
+        Type classType = GetType(log.Entry.Class);
 
         List<object> dependencies = [];
 
@@ -27,33 +28,26 @@ internal class ReflectionService : IReflectionService
         if (constructorParameters.Length != 0)
         {
             //filtreaza parametrii constructorului care nu sunt in interactiuni, deci nu sunt deja in dependencies
-            var filteredConstructorParameters = from param in constructorParameters
-                                                where !dependencies.Any(x => param.ParameterType.IsAssignableFrom(x.GetType()))
-                                                select param;
+            var filteredTypes = constructorParameters.GetParametersExcluding(dependencies);
 
-            foreach (var parameter in filteredConstructorParameters)
+            foreach (var parameter in filteredTypes)
             {
-                Type parameterType = parameter.ParameterType;
+                var interactionsNameList = GetInteractionsNames(log.Interactions, parameter);
 
-                var classNameList = from _log in log.Interactions
-                                    where parameterType.IsAssignableFrom(Type.GetType(_log.Entry.Class))
-                                    select _log.Entry.Class;
-
-                if (classNameList.Any())
+                if (interactionsNameList.Any()) //creaza instanta pentru dependinta care este interactiune
                 {
-                    var mocksList = from _log in log.Interactions
-                                    where _log.Entry.Class == classNameList.First()
-                                    select new MockObject(_log.Entry.Method, _log.Exit.Output);
+                    var mocksList = (from _log in log.Interactions
+                                     where _log.Entry.Class == interactionsNameList.First()
+                                     select MethodMockFactory.Create(_log.Entry.Method, _log.Entry.Input, _log.Exit.Output))
+                                    .ToList();
 
                     var mockInterceptor = new InterceptorService(mocksList);
-                    object? proxiedMock = proxyGenerator.CreateInterfaceProxyWithoutTarget(parameterType, mockInterceptor);
+                    object? proxiedMock = proxyGenerator.CreateInterfaceProxyWithoutTarget(parameter, mockInterceptor);
                     dependencies.Add(proxiedMock);
                 }
-                else
+                else //create mock dummy pentru restu dependintelor care nu sunt folosite..
                 {
-                    Type genericMockType = typeof(Mock<>).MakeGenericType(parameterType);
-                    var mock = Activator.CreateInstance(genericMockType);
-                    dependencies.Add(((Mock)mock).Object);
+                    dependencies.Add(CreateDummyMockInstance(parameter));
                 }
             }
         }
@@ -64,6 +58,19 @@ internal class ReflectionService : IReflectionService
         return Activator.CreateInstance(classType);
     }
 
+    private object CreateDummyMockInstance(Type parameter)
+    {
+        Type genericMockType = typeof(Mock<>).MakeGenericType(parameter);
+        var mock = Activator.CreateInstance(genericMockType);
+        return ((Mock)mock).Object;
+    }
+
+    private IEnumerable<string> GetInteractionsNames(List<MethodLog> interactions, Type parameter)
+    {
+        return from _log in interactions
+               where parameter.IsAssignableFrom(Type.GetType(_log.Entry.Class))
+               select _log.Entry.Class;
+    }
     public void NormalizeInputs(MethodInfo methodInfo, object[] inputs)
     {
         ParameterInfo[] parameterInfos = methodInfo.GetParameters();

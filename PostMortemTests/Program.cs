@@ -1,3 +1,4 @@
+using Debugging.APPLICATION.Helpers;
 using Logging.APPLICATION.Helpers;
 using PostMortemTests.Helpers;
 using PostMortemTests.Repositories;
@@ -10,12 +11,12 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddLogger();
+builder.Services.AddDebugger();
 
 builder.Services.AddLoggedScoped<IOrderService, OrderService>();
 builder.Services.AddLoggedScoped<IOrderMapper, OrderMapper>();
 builder.Services.AddLoggedScoped<IClockService, ClockService>();
 builder.Services.AddLoggedScoped<IOrderRepository, OrderRepository>();
-
 
 var app = builder.Build();
 

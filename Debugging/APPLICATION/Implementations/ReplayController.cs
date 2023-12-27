@@ -1,13 +1,17 @@
 ﻿using Common.DOMAIN.Utilities;
 using Debugging.APPLICATION.Contracts;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Debugging.APPLICATION.Implementations;
 
-internal class ReplayService(IReflectionService _reflectionService) : IReplayService
+[ApiController]
+[Route("[controller]")]
+public class ReplayController(IReflectionService _reflectionService) : ControllerBase
 {
-    public void Replay(string logId)
+    [HttpPost]
+    public IActionResult Replay(string logId)
     {
-        string serializedLog = File.ReadAllText("C:\\Users\\Andrei\\Facultate\\C#\\RepeatableExecutionsTests\\Logging\\logs\\GetWeatherEndpoint-202311232026501458082");
+        string serializedLog = LogSerializer.Read("C:\\Users\\Andrei\\Facultate\\C#\\PostMortemTests\\PostMortem\\logs\\Order-2023.12.27-15.30.44.8500139");
 
         var log = LogSerializer.Deserialize(serializedLog);
 
@@ -20,5 +24,6 @@ internal class ReplayService(IReflectionService _reflectionService) : IReplaySer
 
         _reflectionService.NormalizeInputs(methodInfo, log.Entry.Input);
         methodInfo.Invoke(classInstance, log.Entry.Input);
+        return new OkResult();
     }
 }
