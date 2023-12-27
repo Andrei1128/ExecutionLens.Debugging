@@ -8,7 +8,7 @@ public class OrderService(IOrderMapper _orderMapper, IClockService _clockService
 {
     public bool IsOrderValid(OrderDTO orderDto) => true;
 
-    public async Task PlaceOrder(OrderDTO orderDto)
+    public void PlaceOrder(OrderDTO orderDto)
     {
         Order order = _orderMapper.Map(orderDto);
 
@@ -22,7 +22,7 @@ public class OrderService(IOrderMapper _orderMapper, IClockService _clockService
             order.PlacedAt = (DateTime)DateTimeNow!;
         }
 
-        (string name, string address) = await _orderRepository.GetCustomerNameAndAddress(order.CustomerId);
+        (string name, string address) = _orderRepository.GetCustomerNameAndAddress(order.CustomerId);
 
         if (name is not null && address is not null)
         {
@@ -30,7 +30,7 @@ public class OrderService(IOrderMapper _orderMapper, IClockService _clockService
             order.CustomerAddress = address;
             order.ReceiveAt = _clockService.CalculateReceiveAt(address, order.PlacedAt);
 
-            await _orderRepository.SaveOrder(order);
+            _orderRepository.SaveOrder(order);
         }
         else
         {
@@ -42,5 +42,5 @@ public class OrderService(IOrderMapper _orderMapper, IClockService _clockService
 public interface IOrderService
 {
     bool IsOrderValid(OrderDTO orderDto);
-    Task PlaceOrder(OrderDTO orderDto);
+    void PlaceOrder(OrderDTO orderDto);
 }

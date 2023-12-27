@@ -11,11 +11,11 @@ namespace PostMortemTests.Controllers
     {
         [HttpPost]
         [ServiceFilter(typeof(LogAttribute))]
-        public async Task<IActionResult> Order([FromBody] OrderDTO orderDto)
+        public IActionResult Order([FromBody] OrderDTO orderDto)
         {
             try
             {
-                await _orderService.PlaceOrder(orderDto);
+                _orderService.PlaceOrder(orderDto);
 
                 return Ok("Order placed successfully!");
             }

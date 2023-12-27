@@ -11,7 +11,7 @@ public class ReplayController(IReflectionService _reflectionService) : Controlle
     [HttpPost]
     public IActionResult Replay(string logId)
     {
-        string serializedLog = LogSerializer.Read("C:\\Users\\Andrei\\Facultate\\C#\\PostMortemTests\\PostMortem\\logs\\Order-2023.12.27-15.30.44.8500139");
+        string serializedLog = LogSerializer.Read("C:\\Users\\Andrei\\Facultate\\C#\\PostMortemTests\\PostMortem\\logs\\Order-2023.12.27-17.36.06.9009330");
 
         var log = LogSerializer.Deserialize(serializedLog);
 
