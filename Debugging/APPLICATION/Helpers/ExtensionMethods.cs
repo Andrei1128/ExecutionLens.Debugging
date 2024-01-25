@@ -6,11 +6,11 @@ namespace Debugging.APPLICATION.Helpers;
 
 internal static class ExtensionMethods
 {
-    public static IEnumerable<Type>? GetParametersExcluding(this Type[] parameters, List<object> excludeList)
+    public static IEnumerable<Type> GetParametersExcluding(this Type[] parameters, List<object> excludeList)
     {
-        return from param in parameters
+        return (from param in parameters
                where !excludeList.Any(x => param.IsAssignableFrom(x.GetType()))
-               select param;
+               select param) ?? [];
     }
     public static ClassMock ToClassMock(this MethodLog log)
     {

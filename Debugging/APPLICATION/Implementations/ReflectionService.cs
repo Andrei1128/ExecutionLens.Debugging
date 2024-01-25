@@ -35,11 +35,11 @@ internal class ReflectionService : IReflectionService
             dependencies.Add(CreateDummyMockInstance(dependency));
         }
 
-        var instance = Activator.CreateInstance(classType, [.. dependencies]) 
-            ?? throw new Exception($"Could not create instance for '{classMock.Class}'!");
+        //var instance = Activator.CreateInstance(classType, [.. dependencies])
+        //    ?? throw new Exception($"Could not create instance for '{classMock.Class}'!");
 
         var mockInterceptor = new InterceptorService(classMock.Setups);
-        return proxyGenerator.CreateClassProxyWithTarget(instance, mockInterceptor);
+        return proxyGenerator.CreateClassProxy(classType, constructorArguments: [.. dependencies], mockInterceptor);
     }
     #region METHODS
     private object CreateDummyMockInstance(Type parameter)

@@ -12,7 +12,7 @@ public class ReplayController(IReflectionService _reflectionService) : Controlle
     [HttpPost]
     public IActionResult Replay(string logId)
     {
-        string serializedLog = LogSerializer.Read("C:\\Users\\Andrei\\source\\repos\\PostMortem\\PostMortem\\logs\\Order-2024.01.24-10.21.43.2130045");
+        string serializedLog = LogSerializer.Read("C:\\Users\\Andrei\\source\\repos\\PostMortem\\PostMortem\\logs\\Order-2024.01.25-21.46.19.4845039");
 
         var log = LogSerializer.Deserialize(serializedLog);
 

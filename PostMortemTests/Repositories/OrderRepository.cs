@@ -6,7 +6,7 @@ public class OrderRepository : IOrderRepository
 {
     public (string name, string address) GetCustomerNameAndAddress(int customerId)
     {
-        return ("John Doe", "123 Main St.");
+        return ("Andrei", "123 Main St.");
     }
 
     public void SaveOrder(Order order)
