@@ -1,14 +1,13 @@
 ﻿using Castle.DynamicProxy;
 using Debugging.APPLICATION.Contracts;
 using Debugging.DOMAIN.Models;
-using System.Diagnostics;
 
 namespace Debugging.APPLICATION.Implementations;
 
-internal class InterceptorService(List<MethodMock> setups) : IInterceptorService
+public class InterceptorService(List<MethodMock> setups) : IInterceptorService
 {
 
-    [DebuggerStepThrough]
+    //[DebuggerStepThrough]
     public void Intercept(IInvocation invocation)
     {
         foreach (var setup in setups)

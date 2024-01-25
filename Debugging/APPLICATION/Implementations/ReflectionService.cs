@@ -15,12 +15,6 @@ internal class ReflectionService : IReflectionService
     {
         Type classType = GetType(classMock.Class);
 
-        var constructorParameters = GetConstructorParameters(classType);
-
-        if (constructorParameters.Length == 0)
-            return Activator.CreateInstance(classType)
-                ?? throw new Exception($"Could not create instance for '{classMock.Class}'!");
-
         List<object> dependencies = [];
 
         foreach (var interaction in classMock.Interactions)
@@ -28,18 +22,15 @@ internal class ReflectionService : IReflectionService
             dependencies.Add(CreateInstance(interaction));
         }
 
-        var dummyDependencies = constructorParameters.GetParametersExcluding(dependencies);
+        var dummyDependencies = GetConstructorParameters(classType).GetParametersExcluding(dependencies);
 
         foreach (var dependency in dummyDependencies)
         {
             dependencies.Add(CreateDummyMockInstance(dependency));
         }
 
-        //var instance = Activator.CreateInstance(classType, [.. dependencies])
-        //    ?? throw new Exception($"Could not create instance for '{classMock.Class}'!");
-
-        var mockInterceptor = new InterceptorService(classMock.Setups);
-        return proxyGenerator.CreateClassProxy(classType, constructorArguments: [.. dependencies], mockInterceptor);
+        var interceptor = new InterceptorService(classMock.Setups);
+        return proxyGenerator.CreateClassProxy(classType, [.. dependencies], interceptor);
     }
     #region METHODS
     private object CreateDummyMockInstance(Type parameter)
