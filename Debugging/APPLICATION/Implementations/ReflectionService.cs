@@ -1,7 +1,7 @@
 ﻿using Castle.DynamicProxy;
 using Debugging.APPLICATION.Contracts;
 using Debugging.APPLICATION.Helpers;
-using Debugging.DOMAIN.Utilities;
+using Debugging.DOMAIN.Models;
 using Moq;
 using PostMortem.SHARED.DOMAIN.Models;
 using System.Reflection;
@@ -11,58 +11,47 @@ namespace Debugging.APPLICATION.Implementations;
 internal class ReflectionService : IReflectionService
 {
     private readonly ProxyGenerator proxyGenerator = new();
-    public object CreateInstance(MethodLog log)
+    public object CreateInstance(ClassMock classMock)
     {
-        Type classType = GetType(log.Entry.Class);
+        Type classType = GetType(classMock.Class);
+
+        var constructorParameters = GetConstructorParameters(classType);
+
+        if (constructorParameters.Length == 0)
+            return Activator.CreateInstance(classType)
+                ?? throw new Exception($"Could not create instance for '{classMock.Class}'!");
 
         List<object> dependencies = [];
 
-        //creaza instante pentru depenndintelete aflate in interactiuni
-        foreach (var dep in log.Interactions)
+        foreach (var interaction in classMock.Interactions)
         {
-            dependencies.Add(CreateInstance(dep));
+            dependencies.Add(CreateInstance(interaction));
         }
 
-        ParameterInfo[] constructorParameters = GetConstructorParameters(classType);
+        var dummyDependencies = constructorParameters.GetParametersExcluding(dependencies);
 
-        if (constructorParameters.Length != 0)
+        foreach (var dependency in dummyDependencies)
         {
-            //filtreaza parametrii constructorului care nu sunt in interactiuni, deci nu sunt deja in dependencies
-            var filteredTypes = constructorParameters.GetParametersExcluding(dependencies);
-
-            foreach (var parameter in filteredTypes)
-            {
-                var interactionsNameList = GetInteractionsNames(log.Interactions, parameter);
-
-                if (interactionsNameList.Any()) //creaza instanta pentru dependinta care este interactiune
-                {
-                    var mocksList = (from _log in log.Interactions
-                                     where _log.Entry.Class == interactionsNameList.First()
-                                     select MethodMockFactory.Create(_log.Entry.Method, _log.Entry.Input, _log.Exit.Output))
-                                    .ToList();
-
-                    var mockInterceptor = new InterceptorService(mocksList);
-                    object? proxiedMock = proxyGenerator.CreateInterfaceProxyWithoutTarget(parameter, mockInterceptor);
-                    dependencies.Add(proxiedMock);
-                }
-                else //create mock dummy pentru restu dependintelor care nu sunt folosite..
-                {
-                    dependencies.Add(CreateDummyMockInstance(parameter));
-                }
-            }
+            dependencies.Add(CreateDummyMockInstance(dependency));
         }
-        if (dependencies.Count != 0)
-        {
-            return Activator.CreateInstance(classType, dependencies.ToArray());
-        }
-        return Activator.CreateInstance(classType);
+
+        var instance = Activator.CreateInstance(classType, [.. dependencies]) 
+            ?? throw new Exception($"Could not create instance for '{classMock.Class}'!");
+
+        var mockInterceptor = new InterceptorService(classMock.Setups);
+        return proxyGenerator.CreateClassProxyWithTarget(instance, mockInterceptor);
     }
-
+    #region METHODS
     private object CreateDummyMockInstance(Type parameter)
     {
         Type genericMockType = typeof(Mock<>).MakeGenericType(parameter);
         var mock = Activator.CreateInstance(genericMockType);
         return ((Mock)mock).Object;
+    }
+
+    private bool IsInConstructorParameters(string className, Type[] parameters)
+    {
+        return parameters.Any(p => p.IsAssignableFrom(Type.GetType(className)));
     }
 
     private IEnumerable<string> GetInteractionsNames(List<MethodLog> interactions, Type parameter)
@@ -82,7 +71,7 @@ internal class ReflectionService : IReflectionService
 
     public Type GetType(string typeName) => Type.GetType(typeName) ?? throw new Exception($"Could not find type {typeName}!");
 
-    private ParameterInfo[] GetConstructorParameters(Type classType)
+    private Type[] GetConstructorParameters(Type classType)
     {
         ConstructorInfo[] constructors = classType.GetConstructors();
 
@@ -92,9 +81,10 @@ internal class ReflectionService : IReflectionService
                 .OrderByDescending(c => c.GetParameters().Length)
                 .First();
 
-            return constructor.GetParameters();
+            return constructor.GetParameters().Select(x => x.ParameterType).ToArray();
         }
 
         return [];
     }
+    #endregion
 }

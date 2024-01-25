@@ -1,4 +1,5 @@
-﻿using PostMortemTests.Helpers;
+﻿using PostMortemTests.Controllers;
+using PostMortemTests.Helpers;
 using PostMortemTests.Models;
 using PostMortemTests.Repositories;
 

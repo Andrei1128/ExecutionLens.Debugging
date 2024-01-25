@@ -1,5 +1,6 @@
 ﻿using Common.DOMAIN.Utilities;
 using Debugging.APPLICATION.Contracts;
+using Debugging.APPLICATION.Helpers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Debugging.APPLICATION.Implementations;
@@ -11,11 +12,11 @@ public class ReplayController(IReflectionService _reflectionService) : Controlle
     [HttpPost]
     public IActionResult Replay(string logId)
     {
-        string serializedLog = LogSerializer.Read("C:\\Users\\Andrei\\Facultate\\C#\\PostMortemTests\\PostMortem\\logs\\Order-2023.12.27-17.36.06.9009330");
+        string serializedLog = LogSerializer.Read("C:\\Users\\Andrei\\source\\repos\\PostMortem\\PostMortem\\logs\\Order-2024.01.24-10.21.43.2130045");
 
         var log = LogSerializer.Deserialize(serializedLog);
 
-        var classInstance = _reflectionService.CreateInstance(log);
+        var classInstance = _reflectionService.CreateInstance(log.ToClassMock());
 
         var type = _reflectionService.GetType(log.Entry.Class);
 

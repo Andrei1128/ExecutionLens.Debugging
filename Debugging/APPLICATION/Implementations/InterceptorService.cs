@@ -5,27 +5,25 @@ using System.Diagnostics;
 
 namespace Debugging.APPLICATION.Implementations;
 
-internal class InterceptorService : IInterceptorService
+internal class InterceptorService(List<MethodMock> setups) : IInterceptorService
 {
-    private readonly List<MethodMock> _mocks;
-    public InterceptorService(List<MethodMock> mocks) => _mocks = mocks;
 
     [DebuggerStepThrough]
     public void Intercept(IInvocation invocation)
     {
-        foreach (var mock in _mocks)
+        foreach (var setup in setups)
         {
-            if (mock.Method == invocation.Method.Name)
+            if (setup.Method == invocation.Method.Name)
             {
-                _mocks.Remove(mock);
+                setups.Remove(setup);
 
-                var mockInputs = mock.Input;
-                for (int i = 0; i < mockInputs?.Length; i++)
+                var setupInputs = setup.Input;
+                for (int i = 0; i < setupInputs?.Length; i++)
                 {
-                    invocation.SetArgumentValue(i, mockInputs[i]);
+                    invocation.SetArgumentValue(i, setupInputs[i]);
                 }
 
-                invocation.ReturnValue = mock.Output;
+                invocation.ReturnValue = setup.Output;
 
                 invocation.Proceed();
 
