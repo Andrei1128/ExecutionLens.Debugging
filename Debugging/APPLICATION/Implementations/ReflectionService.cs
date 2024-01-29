@@ -29,8 +29,25 @@ internal class ReflectionService : IReflectionService
             dependencies.Add(CreateDummyMockInstance(dependency));
         }
 
+        var instance = Activator.CreateInstance(classType, [.. dependencies]);
+
         var interceptor = new InterceptorService(classMock.Setups);
-        return proxyGenerator.CreateClassProxy(classType, [.. dependencies], interceptor);
+
+        var interfaceType = classType.Name switch
+        {
+            "OrderService" => GetType("PostMortemTests.Services.IOrderService, PostMortemTests"),
+            "ClockService" => GetType("PostMortemTests.Services.IClockService, PostMortemTests"),
+            "OrderMapper" => GetType("PostMortemTests.Helpers.IOrderMapper, PostMortemTests"),
+            "OrderRepository" => GetType("PostMortemTests.Repositories.IOrderRepository, PostMortemTests"),
+            "OrderController" => GetType("PostMortemTests.Controllers.OrderController, PostMortemTests")
+        };
+        
+        if(classType.Name == "OrderController")
+        {
+            return proxyGenerator.CreateClassProxy(interfaceType, [.. dependencies], interceptor);
+        }
+        else
+            return proxyGenerator.CreateInterfaceProxyWithTarget(interfaceType, instance, interceptor);
     }
     #region METHODS
     private object CreateDummyMockInstance(Type parameter)
@@ -51,13 +68,14 @@ internal class ReflectionService : IReflectionService
                where parameter.IsAssignableFrom(Type.GetType(_log.Entry.Class))
                select _log.Entry.Class;
     }
-    public void NormalizeInputs(MethodInfo methodInfo, object[] inputs)
+    public static object[] NormalizeInputs(MethodInfo methodInfo, object[] inputs)
     {
         ParameterInfo[] parameterInfos = methodInfo.GetParameters();
         for (int i = 0; i < inputs.Length; i++)
         {
             inputs[i] = Convert.ChangeType(inputs[i], parameterInfos[i].ParameterType);
         }
+        return inputs;
     }
 
     public Type GetType(string typeName) => Type.GetType(typeName) ?? throw new Exception($"Could not find type {typeName}!");

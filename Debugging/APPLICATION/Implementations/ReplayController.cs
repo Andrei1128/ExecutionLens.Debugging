@@ -18,12 +18,12 @@ public class ReplayController(IReflectionService _reflectionService) : Controlle
 
         var classInstance = _reflectionService.CreateInstance(log.ToClassMock());
 
-        var type = _reflectionService.GetType(log.Entry.Class);
+        var type = classInstance.GetType();
 
         var methodInfo = type.GetMethod(log.Entry.Method)
             ?? throw new Exception("Could not find method info!");
 
-        _reflectionService.NormalizeInputs(methodInfo, log.Entry.Input);
+        ReflectionService.NormalizeInputs(methodInfo, log.Entry.Input);
         methodInfo.Invoke(classInstance, log.Entry.Input);
         return new OkResult();
     }

@@ -17,6 +17,9 @@ public class InterceptorService(List<MethodMock> setups) : IInterceptorService
                 setups.Remove(setup);
 
                 var setupInputs = setup.Input;
+
+                ReflectionService.NormalizeInputs(invocation.Method, setupInputs);
+
                 for (int i = 0; i < setupInputs?.Length; i++)
                 {
                     invocation.SetArgumentValue(i, setupInputs[i]);
