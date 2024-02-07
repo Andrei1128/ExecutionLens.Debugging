@@ -4,5 +4,5 @@ namespace Debugging.APPLICATION.Contracts;
 
 public interface IReflectionService
 {
-    object? CreateInstance(ClassMock log, ClassMock? parent = null);
+    object CreateInstance(Mock mock, Mock? parent = null);
 }

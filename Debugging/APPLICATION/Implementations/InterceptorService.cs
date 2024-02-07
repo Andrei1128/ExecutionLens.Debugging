@@ -1,10 +1,10 @@
 ﻿using Castle.DynamicProxy;
-using Debugging.APPLICATION.Contracts;
+using Debugging.DOMAIN.Extensions;
 using Debugging.DOMAIN.Models;
 
 namespace Debugging.APPLICATION.Implementations;
 
-public class InterceptorService(List<MethodMock> setups) : IInterceptorService
+public class InterceptorService(List<Setup> setups) : IInterceptor
 {
 
     //[DebuggerStepThrough]
@@ -16,13 +16,14 @@ public class InterceptorService(List<MethodMock> setups) : IInterceptorService
             {
                 setups.Remove(setup);
 
-                var setupInputs = setup.Input;
-
-                ReflectionService.NormalizeInputs(invocation.Method, setupInputs);
-
-                for (int i = 0; i < setupInputs?.Length; i++)
+                if (setup.Input is not null)
                 {
-                    invocation.SetArgumentValue(i, setupInputs[i]);
+                    var normalizedParameters = invocation.Method.NormalizeParametersType(setup.Input);
+
+                    for (int i = 0; i < normalizedParameters?.Length; i++)
+                    {
+                        invocation.SetArgumentValue(i, normalizedParameters[i]);
+                    }
                 }
 
                 invocation.ReturnValue = setup.Output;

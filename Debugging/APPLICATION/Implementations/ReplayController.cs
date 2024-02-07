@@ -1,6 +1,6 @@
 ﻿using Common.DOMAIN.Utilities;
 using Debugging.APPLICATION.Contracts;
-using Debugging.APPLICATION.Helpers;
+using Debugging.DOMAIN.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Debugging.APPLICATION.Implementations;
@@ -16,15 +16,23 @@ public class ReplayController(IReflectionService _reflectionService) : Controlle
 
         var log = LogSerializer.Deserialize(serializedLog);
 
-        var classInstance = _reflectionService.CreateInstance(log.ToClassMock());
+        var classInstance = _reflectionService.CreateInstance(log.ToMock());
 
         var type = classInstance.GetType();
 
-        var methodInfo = type.GetMethod(log.Entry.Method)
-            ?? throw new Exception("Could not find method info!");
+        var method = type.GetMethod(log.Entry.Method)
+            ?? throw new Exception($"Method '{log.Entry.Method}' not found on Type '{type}'!");
 
-        ReflectionService.NormalizeInputs(methodInfo, log.Entry.Input);
-        methodInfo.Invoke(classInstance, log.Entry.Input);
+        if (log.Entry.Input is not null)
+        {
+            var normalizedParameters = method.NormalizeParametersType(method, log.Entry.Input);
+            method.Invoke(classInstance, normalizedParameters);
+        }
+        else
+        {
+            method.Invoke(classInstance, null);
+        }
+
         return new OkResult();
     }
 }
