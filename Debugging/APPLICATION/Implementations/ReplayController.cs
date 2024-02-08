@@ -1,9 +1,11 @@
-﻿using Common.DOMAIN.Utilities;
-using Debugging.APPLICATION.Contracts;
-using Debugging.DOMAIN.Extensions;
+﻿using PostMortem.Common.DOMAIN.Utilities;
+using PostMortem.Debugging.APPLICATION.Contracts;
+using PostMortem.Debugging.DOMAIN.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using System.Reflection;
+using PostMortem.Common.DOMAIN.Models;
 
-namespace Debugging.APPLICATION.Implementations;
+namespace PostMortem.Debugging.APPLICATION.Implementations;
 
 [ApiController]
 [Route("[controller]")]
@@ -14,18 +16,18 @@ public class ReplayController(IReflectionService _reflectionService) : Controlle
     {
         string serializedLog = LogSerializer.Read("C:\\Users\\Andrei\\source\\repos\\PostMortem\\PostMortem\\logs\\Order-2024.01.25-21.46.19.4845039");
 
-        var log = LogSerializer.Deserialize(serializedLog);
+        MethodLog log = LogSerializer.Deserialize(serializedLog);
 
-        var classInstance = _reflectionService.CreateInstance(log.ToMock());
+        object classInstance = _reflectionService.CreateInstance(log.ToMock());
 
-        var type = classInstance.GetType();
+        Type type = classInstance.GetType();
 
-        var method = type.GetMethod(log.Entry.Method)
-            ?? throw new Exception($"Method '{log.Entry.Method}' not found on Type '{type}'!");
+        MethodInfo method = type.GetMethod(log.Entry.Method)
+            ?? throw new Exception($"Method '{log.Entry.Method}' not found on Type '{log.Entry.Class}'!");
 
         if (log.Entry.Input is not null)
         {
-            var normalizedParameters = method.NormalizeParametersType(method, log.Entry.Input);
+            object[] normalizedParameters = method.NormalizeParametersType(method, log.Entry.Input);
             method.Invoke(classInstance, normalizedParameters);
         }
         else

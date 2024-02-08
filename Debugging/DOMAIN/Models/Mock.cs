@@ -1,4 +1,4 @@
-﻿namespace Debugging.DOMAIN.Models;
+﻿namespace PostMortem.Debugging.DOMAIN.Models;
 
 public class Mock
 {

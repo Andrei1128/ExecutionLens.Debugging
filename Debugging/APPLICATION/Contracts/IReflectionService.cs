@@ -1,6 +1,6 @@
-﻿using Debugging.DOMAIN.Models;
+﻿using PostMortem.Debugging.DOMAIN.Models;
 
-namespace Debugging.APPLICATION.Contracts;
+namespace PostMortem.Debugging.APPLICATION.Contracts;
 
 public interface IReflectionService
 {

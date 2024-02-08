@@ -1,10 +1,10 @@
 ﻿using Castle.DynamicProxy;
-using Debugging.APPLICATION.Contracts;
-using Debugging.DOMAIN.Extensions;
-using Debugging.DOMAIN.Models;
+using PostMortem.Debugging.APPLICATION.Contracts;
+using PostMortem.Debugging.DOMAIN.Extensions;
+using PostMortem.Debugging.DOMAIN.Models;
 using System.Reflection;
 
-namespace Debugging.APPLICATION.Implementations;
+namespace PostMortem.Debugging.APPLICATION.Implementations;
 
 internal class ReflectionService : IReflectionService
 {
@@ -15,14 +15,14 @@ internal class ReflectionService : IReflectionService
 
         List<object> dependencies = [];
 
-        foreach (var interaction in mock.Interactions)
+        foreach (Mock interaction in mock.Interactions)
         {
             dependencies.Add(CreateInstance(interaction, mock));
         }
 
-        IEnumerable<Type> dummyDependencies = GetParametersExcluding(GetConstructorParameters(classType), dependencies);
+        IEnumerable<Type> dummyDependencies = GetTypesExcluding(GetConstructorParametersTypes(classType), dependencies);
 
-        foreach (var dependency in dummyDependencies)
+        foreach (Type dependency in dummyDependencies)
         {
             dependencies.Add(proxyGenerator.CreateClassProxy(dependency));
         }
@@ -35,21 +35,24 @@ internal class ReflectionService : IReflectionService
             return instance;
         }
 
-        var interceptor = new InterceptorService(mock.Setups);
+        InterceptorService interceptor = new(mock.Setups);
 
-        var interfaceType = GetConstructorParameters(parent.GetClassType()).FirstOrDefault(p => p.IsAssignableFrom(classType));
+        Type interfaceType = GetConstructorParametersTypes(parent.GetClassType()).First(p => p.IsAssignableFrom(classType));
 
         return proxyGenerator.CreateInterfaceProxyWithTarget(interfaceType, instance, interceptor);
     }
 
-    private IEnumerable<Type> GetParametersExcluding(Type[] parameters, List<object> excludeList)
+    private IEnumerable<Type> GetTypesExcluding(IEnumerable<Type> types, List<object> excluding)
     {
-        return (from param in parameters
-                where !excludeList.Any(x => param.IsAssignableFrom(x.GetType()))
-                select param) ?? [];
+        IEnumerable<Type> excludingTypes =
+            from type in types
+            where !excluding.Any(x => type.IsAssignableFrom(x.GetType()))
+            select type;
+
+        return excludingTypes ?? [];
     }
 
-    private Type[] GetConstructorParameters(Type classType)
+    private IEnumerable<Type> GetConstructorParametersTypes(Type classType)
     {
         ConstructorInfo[] constructors = classType.GetConstructors();
 
@@ -59,7 +62,7 @@ internal class ReflectionService : IReflectionService
                 .OrderByDescending(c => c.GetParameters().Length)
                 .First();
 
-            return constructor.GetParameters().Select(x => x.ParameterType).ToArray();
+            return constructor.GetParameters().Select(x => x.ParameterType);
         }
 
         return [];

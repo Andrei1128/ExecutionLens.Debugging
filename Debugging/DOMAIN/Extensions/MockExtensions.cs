@@ -1,11 +1,11 @@
-﻿using Debugging.DOMAIN.Models;
-using PostMortem.SHARED.DOMAIN.Models;
+﻿using PostMortem.Debugging.DOMAIN.Models;
+using PostMortem.Common.DOMAIN.Models;
 
-namespace Debugging.DOMAIN.Extensions;
+namespace PostMortem.Debugging.DOMAIN.Extensions;
 
 public static class MockExtensions
 {
-    public static Type GetClassType(this Mock payload) 
+    public static Type GetClassType(this Mock payload)
         => Type.GetType(payload.Class) ?? throw new Exception($"Type '{payload.Class}' not found!");
 
     public static Mock ToMock(this MethodLog log)
@@ -23,22 +23,20 @@ public static class MockExtensions
         };
 
         foreach (var interaction in log.Interactions)
-        {
             AddInteraction(mock, interaction);
-        }
 
         return mock;
     }
 
     private static void AddInteraction(Mock mock, MethodLog interaction)
     {
-        var existingMock = mock.Interactions.FirstOrDefault(cs => cs.Class == interaction.Entry.Class);
+        Mock? existingMock = mock.Interactions.FirstOrDefault(cs => cs.Class == interaction.Entry.Class);
 
         if (existingMock == null)
         {
-            existingMock = new Mock 
-            { 
-                Class = interaction.Entry.Class 
+            existingMock = new Mock
+            {
+                Class = interaction.Entry.Class
             };
             mock.Interactions.Add(existingMock);
         }
@@ -52,9 +50,7 @@ public static class MockExtensions
 
         existingMock.Setups.Add(methodSetup);
 
-        foreach (var nestedInteraction in interaction.Interactions)
-        {
+        foreach (MethodLog nestedInteraction in interaction.Interactions)
             AddInteraction(existingMock, nestedInteraction);
-        }
     }
 }

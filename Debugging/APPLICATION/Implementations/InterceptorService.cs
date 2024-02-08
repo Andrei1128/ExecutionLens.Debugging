@@ -1,37 +1,34 @@
 ﻿using Castle.DynamicProxy;
-using Debugging.DOMAIN.Extensions;
-using Debugging.DOMAIN.Models;
+using PostMortem.Debugging.DOMAIN.Extensions;
+using PostMortem.Debugging.DOMAIN.Models;
+using System.Diagnostics;
 
-namespace Debugging.APPLICATION.Implementations;
+namespace PostMortem.Debugging.APPLICATION.Implementations;
 
 public class InterceptorService(List<Setup> setups) : IInterceptor
 {
-
-    //[DebuggerStepThrough]
+    [DebuggerStepThrough]
     public void Intercept(IInvocation invocation)
     {
-        foreach (var setup in setups)
+        Setup setup = setups.First();
+
+        if (setup.Method == invocation.Method.Name)
         {
-            if (setup.Method == invocation.Method.Name)
+            setups.RemoveAt(0);
+
+            if (setup.Input is not null)
             {
-                setups.Remove(setup);
+                object[] normalizedParameters = invocation.Method.NormalizeParametersType(setup.Input);
 
-                if (setup.Input is not null)
+                for (int i = 0; i < normalizedParameters?.Length; i++)
                 {
-                    var normalizedParameters = invocation.Method.NormalizeParametersType(setup.Input);
-
-                    for (int i = 0; i < normalizedParameters?.Length; i++)
-                    {
-                        invocation.SetArgumentValue(i, normalizedParameters[i]);
-                    }
+                    invocation.SetArgumentValue(i, normalizedParameters[i]);
                 }
-
-                invocation.ReturnValue = setup.Output;
-
-                invocation.Proceed();
-
-                break;
             }
+
+            invocation.ReturnValue = setup.Output;
+
+            invocation.Proceed();
         }
     }
 }

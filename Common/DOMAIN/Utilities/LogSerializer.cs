@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
-using PostMortem.SHARED.DOMAIN.Models;
+using PostMortem.Common.DOMAIN.Models;
 
-namespace Common.DOMAIN.Utilities;
+namespace PostMortem.Common.DOMAIN.Utilities;
 
 public class LogSerializer
 {

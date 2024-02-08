@@ -1,6 +1,6 @@
-﻿using Debugging.DOMAIN.Models;
+﻿using PostMortem.Debugging.DOMAIN.Models;
 
-namespace Debugging.DOMAIN.Factories;
+namespace PostMortem.Debugging.DOMAIN.Factories;
 
 internal class MockFactory
 {
