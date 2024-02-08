@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 namespace PostMortem.Debugging.APPLICATION.Implementations;
 
-public class InterceptorService(List<Setup> setups) : IInterceptor
+internal class InterceptorService(List<Setup> setups) : IInterceptor
 {
     [DebuggerStepThrough]
     public void Intercept(IInvocation invocation)

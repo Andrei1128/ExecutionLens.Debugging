@@ -1,4 +1,5 @@
 ﻿using Castle.DynamicProxy;
+using PostMortem.Common.DOMAIN.Models;
 using PostMortem.Debugging.APPLICATION.Contracts;
 using PostMortem.Debugging.DOMAIN.Extensions;
 using PostMortem.Debugging.DOMAIN.Models;
@@ -9,6 +10,7 @@ namespace PostMortem.Debugging.APPLICATION.Implementations;
 internal class ReflectionService : IReflectionService
 {
     private readonly ProxyGenerator proxyGenerator = new();
+    
     public object CreateInstance(Mock mock, Mock? parent = null)
     {
         Type classType = mock.GetClassType();
@@ -40,6 +42,19 @@ internal class ReflectionService : IReflectionService
         Type interfaceType = GetConstructorParametersTypes(parent.GetClassType()).First(p => p.IsAssignableFrom(classType));
 
         return proxyGenerator.CreateInterfaceProxyWithTarget(interfaceType, instance, interceptor);
+    }
+
+    public object[] NormalizeParametersType(MethodInfo methodInfo, params object[] parameters)
+    {
+        object[] normalizedParameters = new object[parameters.Length];
+
+        ParameterInfo[] parameterInfos = methodInfo.GetParameters();
+        for (int i = 0; i < parameters.Length; i++)
+        {
+            normalizedParameters[i] = Convert.ChangeType(parameters[i], parameterInfos[i].ParameterType);
+        }
+
+        return normalizedParameters;
     }
 
     private IEnumerable<Type> GetTypesExcluding(IEnumerable<Type> types, List<object> excluding)
