@@ -2,7 +2,7 @@
 
 namespace PostMortem.Debugging.DOMAIN.Extensions;
 
-public static class MethodInfoExtensions
+internal static class MethodInfoExtensions
 {
     public static object[] NormalizeParametersType(this MethodInfo methodInfo, params object[] parameters)
     {

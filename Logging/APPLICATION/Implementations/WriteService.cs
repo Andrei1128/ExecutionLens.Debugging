@@ -10,7 +10,7 @@ internal class WriteService : IWriteService
     {
         string serializedLog = LogSerializer.Serialize(log);
 
-        string filePath = "..\\PostMortem\\logs";
+        string filePath = "..\\PostMortemTests\\logs";
 
         if (!Directory.Exists(filePath))
             Directory.CreateDirectory(filePath);

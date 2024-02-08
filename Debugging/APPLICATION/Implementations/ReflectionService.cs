@@ -9,6 +9,7 @@ namespace PostMortem.Debugging.APPLICATION.Implementations;
 internal class ReflectionService : IReflectionService
 {
     private readonly ProxyGenerator proxyGenerator = new();
+    
     public object CreateInstance(Mock mock, Mock? parent = null)
     {
         Type classType = mock.GetClassType();
@@ -24,7 +25,14 @@ internal class ReflectionService : IReflectionService
 
         foreach (Type dependency in dummyDependencies)
         {
-            dependencies.Add(proxyGenerator.CreateClassProxy(dependency));
+            if(dependency.IsInterface)
+            {
+                dependencies.Add(proxyGenerator.CreateInterfaceProxyWithoutTarget(dependency));
+            }
+            else
+            {
+                dependencies.Add(proxyGenerator.CreateClassProxy(dependency));
+            }
         }
 
         object instance = Activator.CreateInstance(classType, [.. dependencies])
@@ -40,6 +48,19 @@ internal class ReflectionService : IReflectionService
         Type interfaceType = GetConstructorParametersTypes(parent.GetClassType()).First(p => p.IsAssignableFrom(classType));
 
         return proxyGenerator.CreateInterfaceProxyWithTarget(interfaceType, instance, interceptor);
+    }
+
+    public object[] NormalizeParametersType(MethodInfo methodInfo, params object[] parameters)
+    {
+        object[] normalizedParameters = new object[parameters.Length];
+
+        ParameterInfo[] parameterInfos = methodInfo.GetParameters();
+        for (int i = 0; i < parameters.Length; i++)
+        {
+            normalizedParameters[i] = Convert.ChangeType(parameters[i], parameterInfos[i].ParameterType);
+        }
+
+        return normalizedParameters;
     }
 
     private IEnumerable<Type> GetTypesExcluding(IEnumerable<Type> types, List<object> excluding)

@@ -3,7 +3,7 @@ using PostMortem.Common.DOMAIN.Models;
 
 namespace PostMortem.Debugging.DOMAIN.Extensions;
 
-public static class MockExtensions
+internal static class MockExtensions
 {
     public static Type GetClassType(this Mock payload)
         => Type.GetType(payload.Class) ?? throw new Exception($"Type '{payload.Class}' not found!");

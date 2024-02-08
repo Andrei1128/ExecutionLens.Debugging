@@ -1,20 +1,16 @@
-﻿using PostMortem.Common.DOMAIN.Utilities;
+﻿using PostMortem.Common.DOMAIN.Models;
+using PostMortem.Common.DOMAIN.Utilities;
 using PostMortem.Debugging.APPLICATION.Contracts;
 using PostMortem.Debugging.DOMAIN.Extensions;
-using Microsoft.AspNetCore.Mvc;
 using System.Reflection;
-using PostMortem.Common.DOMAIN.Models;
 
 namespace PostMortem.Debugging.APPLICATION.Implementations;
 
-[ApiController]
-[Route("[controller]")]
-public class ReplayController(IReflectionService _reflectionService) : ControllerBase
+internal class ReplayService(IReflectionService _reflectionService) : IReplayService
 {
-    [HttpPost]
-    public IActionResult Replay(string logId)
+    public void Replay(string logId)
     {
-        string serializedLog = LogSerializer.Read("C:\\Users\\Andrei\\source\\repos\\PostMortem\\PostMortem\\logs\\Order-2024.01.25-21.46.19.4845039");
+        string serializedLog = LogSerializer.Read("C:\\Users\\Andrei\\source\\repos\\PostMortemTests\\PostMortemTests\\logs\\Order-2024.02.08-19.08.37.0481480");
 
         MethodLog log = LogSerializer.Deserialize(serializedLog);
 
@@ -27,14 +23,12 @@ public class ReplayController(IReflectionService _reflectionService) : Controlle
 
         if (log.Entry.Input is not null)
         {
-            object[] normalizedParameters = method.NormalizeParametersType(method, log.Entry.Input);
+            object[] normalizedParameters = method.NormalizeParametersType(log.Entry.Input);
             method.Invoke(classInstance, normalizedParameters);
         }
         else
         {
             method.Invoke(classInstance, null);
         }
-
-        return new OkResult();
     }
 }

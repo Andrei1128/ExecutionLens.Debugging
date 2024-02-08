@@ -8,6 +8,7 @@ public static partial class ServiceCollection
 {
     public static void AddDebugger(this IServiceCollection services)
     {
+        services.AddScoped<IReplayService, ReplayService>();
         services.AddScoped<IReflectionService, ReflectionService>();
     }
 }
