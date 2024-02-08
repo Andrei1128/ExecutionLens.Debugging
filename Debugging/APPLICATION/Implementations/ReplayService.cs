@@ -10,7 +10,7 @@ internal class ReplayService(IReflectionService _reflectionService) : IReplaySer
 {
     public void Replay(string logId)
     {
-        string serializedLog = LogSerializer.Read("C:\\Users\\Andrei\\source\\repos\\PostMortem\\PostMortem\\logs\\Order-2024.01.25-21.46.19.4845039");
+        string serializedLog = LogSerializer.Read("C:\\Users\\Andrei\\source\\repos\\PostMortemTests\\PostMortemTests\\logs\\Order-2024.02.08-19.08.37.0481480");
 
         MethodLog log = LogSerializer.Deserialize(serializedLog);
 

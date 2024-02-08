@@ -1,5 +1,4 @@
 ﻿using Castle.DynamicProxy;
-using PostMortem.Common.DOMAIN.Models;
 using PostMortem.Debugging.APPLICATION.Contracts;
 using PostMortem.Debugging.DOMAIN.Extensions;
 using PostMortem.Debugging.DOMAIN.Models;
@@ -26,7 +25,14 @@ internal class ReflectionService : IReflectionService
 
         foreach (Type dependency in dummyDependencies)
         {
-            dependencies.Add(proxyGenerator.CreateClassProxy(dependency));
+            if(dependency.IsInterface)
+            {
+                dependencies.Add(proxyGenerator.CreateInterfaceProxyWithoutTarget(dependency));
+            }
+            else
+            {
+                dependencies.Add(proxyGenerator.CreateClassProxy(dependency));
+            }
         }
 
         object instance = Activator.CreateInstance(classType, [.. dependencies])

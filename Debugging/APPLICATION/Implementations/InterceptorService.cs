@@ -27,7 +27,6 @@ internal class InterceptorService(List<Setup> setups) : IInterceptor
             }
 
             invocation.ReturnValue = setup.Output;
-
             invocation.Proceed();
         }
     }

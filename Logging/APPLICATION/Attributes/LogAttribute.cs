@@ -3,11 +3,12 @@ using PostMortem.Logging.DOMAIN.Configurations;
 using PostMortem.Logging.DOMAIN.Factories;
 using PostMortem.Logging.DOMAIN.Utilities;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc;
 
 namespace PostMortem.Logging;
 
 [AttributeUsage(AttributeTargets.Method)]
-public class LogAttribute(ILogService _logService) : Attribute, IAsyncActionFilter
+internal class LoggerAttribute(ILogService _logService) : Attribute, IAsyncActionFilter
 {
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
@@ -28,4 +29,10 @@ public class LogAttribute(ILogService _logService) : Attribute, IAsyncActionFilt
             _logService.Write();
         }
     }
+}
+
+[AttributeUsage(AttributeTargets.Method)]
+public class LogAttribute : TypeFilterAttribute
+{
+    public LogAttribute() : base(typeof(LoggerAttribute)) { }
 }
