@@ -10,7 +10,7 @@ internal class ReplayService(IReflectionService _reflectionService) : IReplaySer
 {
     public void Replay(string logId)
     {
-        string serializedLog = LogSerializer.Read("C:\\Users\\Andrei\\source\\repos\\PostMortemTests\\PostMortemTests\\logs\\Order-2024.02.08-19.08.37.0481480");
+        string serializedLog = LogSerializer.Read("C:\\Users\\Andrei\\source\\repos\\PostMortemTests\\PostMortemTests\\logs\\Order-2024.02.10-15.44.31.5085831");
 
         MethodLog log = LogSerializer.Deserialize(serializedLog);
 
@@ -21,14 +21,14 @@ internal class ReplayService(IReflectionService _reflectionService) : IReplaySer
         MethodInfo method = type.GetMethod(log.Entry.Method)
             ?? throw new Exception($"Method '{log.Entry.Method}' not found on Type '{log.Entry.Class}'!");
 
-        if (log.Entry.Input is not null)
-        {
-            object[] normalizedParameters = method.NormalizeParametersType(log.Entry.Input);
-            method.Invoke(classInstance, normalizedParameters);
+            if (log.Entry.Input is not null)
+            {
+                object[] normalizedParameters = method.NormalizeParametersType(log.Entry.Input);
+                method.Invoke(classInstance, normalizedParameters);
+            }
+            else
+            {
+                method.Invoke(classInstance, null);
+            }
         }
-        else
-        {
-            method.Invoke(classInstance, null);
-        }
-    }
 }

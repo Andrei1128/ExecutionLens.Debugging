@@ -3,6 +3,7 @@ using PostMortem.Logging.APPLICATION.Contracts;
 using PostMortem.Logging.APPLICATION.Implementations;
 using PostMortem.Logging.DOMAIN.Configurations;
 using Microsoft.Extensions.DependencyInjection;
+using PostMortem.Logging.DOMAIN.Utilities;
 
 namespace PostMortem.Logging;
 
@@ -46,6 +47,7 @@ public static partial class ServiceCollection
         services.AddScoped<ILogService, LogService>();
         services.AddScoped<IWriteService, WriteService>();
         services.AddScoped<LogAttribute>();
+        services.AddScoped<LogManager>();
         return new LoggerConfiguration();
     }
 }
