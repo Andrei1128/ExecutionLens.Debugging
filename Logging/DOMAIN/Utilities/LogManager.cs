@@ -2,6 +2,6 @@
 
 internal class LogManager
 {
-    public static bool IsLogging;
-    public static void StartLogging() => IsLogging = true;
+    public bool IsLogging;
+    public void StartLogging() => IsLogging = true;
 }

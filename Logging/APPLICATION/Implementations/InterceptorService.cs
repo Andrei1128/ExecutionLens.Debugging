@@ -1,16 +1,15 @@
 ﻿using Castle.DynamicProxy;
 using PostMortem.Logging.APPLICATION.Contracts;
-using PostMortem.Logging.DOMAIN.Configurations;
 using PostMortem.Logging.DOMAIN.Factories;
 using PostMortem.Logging.DOMAIN.Utilities;
 
 namespace PostMortem.Logging.APPLICATION.Implementations;
 
-internal class InterceptorService(ILogService _logService) : IInterceptorService
+internal class InterceptorService(ILogService _logService, LogManager _logManager) : IInterceptorService
 {
     public void Intercept(IInvocation invocation)
     {
-        if (!LogManager.IsLogging)
+        if (!_logManager.IsLogging)
         {
             invocation.Proceed();
         }
@@ -28,11 +27,7 @@ internal class InterceptorService(ILogService _logService) : IInterceptorService
             {
                 _logService.AddLogExit(MethodExitFactory.Create(ex));
 
-                if (!LoggerConfiguration.IsSupressingExceptions)
-                {
-                    _logService.Write();
-                    throw;
-                }
+                throw;
             }
     }
 }
