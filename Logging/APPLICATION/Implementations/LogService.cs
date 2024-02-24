@@ -1,10 +1,11 @@
 ﻿using PostMortem.Logging.APPLICATION.Contracts;
 using PostMortem.Logging.DOMAIN.Factories;
 using PostMortem.Common.DOMAIN.Models;
+using Common.PERSISTANCE.Contracts;
 
 namespace PostMortem.Logging.APPLICATION.Implementations;
 
-internal class LogService(IWriteService _writeService) : ILogService
+internal class LogService(ILogRepository _logRepository) : ILogService
 {
     private readonly Stack<MethodLog> CallStack = new();
     private MethodLog? Root = null;
@@ -40,5 +41,5 @@ internal class LogService(IWriteService _writeService) : ILogService
             Current = current;
     }
 
-    public void Write() => _writeService.Write(Root!);
+    public async Task<string> Write() => await _logRepository.Add(Root!);
 }

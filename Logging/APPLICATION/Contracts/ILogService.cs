@@ -4,7 +4,7 @@ namespace PostMortem.Logging.APPLICATION.Contracts;
 
 internal interface ILogService
 {
-    public void AddLogEntry(MethodEntry entry);
-    public void AddLogExit(MethodExit exit);
-    public void Write();
+    void AddLogEntry(MethodEntry entry);
+    void AddLogExit(MethodExit exit);
+    Task<string> Write();
 }

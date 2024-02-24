@@ -9,12 +9,11 @@ namespace PostMortem.Debugging.API.Controllers
     public class ReplayController(IReplayService _replayService) : ControllerBase
     {
         [HttpPost]
-        public ActionResult Replay(string logId)
+        public async Task<IActionResult> Replay(string logId)
         {
             if (Debugger.IsAttached)
             {
-
-                _replayService.Replay(logId);
+                await _replayService.Replay(logId);
 
                 return Ok("Success!");
             }

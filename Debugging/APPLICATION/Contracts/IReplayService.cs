@@ -2,5 +2,5 @@
 
 public interface IReplayService
 {
-    void Replay(string logId);
+    Task Replay(string logId);
 }

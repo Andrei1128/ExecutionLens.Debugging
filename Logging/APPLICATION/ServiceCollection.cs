@@ -45,7 +45,6 @@ public static partial class ServiceCollection
         services.AddSingleton<ProxyGenerator>();
         services.AddScoped<IInterceptorService, InterceptorService>();
         services.AddScoped<ILogService, LogService>();
-        services.AddScoped<IWriteService, WriteService>();
         services.AddScoped<LogAttribute>();
         services.AddScoped<LogManager>();
         return new LoggerConfiguration();

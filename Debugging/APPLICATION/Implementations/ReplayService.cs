@@ -1,18 +1,16 @@
-﻿using PostMortem.Common.DOMAIN.Models;
-using PostMortem.Common.DOMAIN.Utilities;
+﻿using Common.PERSISTANCE.Contracts;
+using PostMortem.Common.DOMAIN.Models;
 using PostMortem.Debugging.APPLICATION.Contracts;
 using PostMortem.Debugging.DOMAIN.Extensions;
 using System.Reflection;
 
 namespace PostMortem.Debugging.APPLICATION.Implementations;
 
-internal class ReplayService(IReflectionService _reflectionService) : IReplayService
+internal class ReplayService(IReflectionService _reflectionService, ILogRepository _logRepository) : IReplayService
 {
-    public void Replay(string logId)
+    public async Task Replay(string logId)
     {
-        string serializedLog = LogSerializer.Read("C:\\Users\\Andrei\\source\\repos\\PostMortemTests\\PostMortemTests\\logs\\Order-2024.02.10-15.44.31.5085831");
-
-        MethodLog log = LogSerializer.Deserialize(serializedLog);
+        MethodLog log = await _logRepository.Get(logId);
 
         object classInstance = _reflectionService.CreateInstance(log.ToMock());
 

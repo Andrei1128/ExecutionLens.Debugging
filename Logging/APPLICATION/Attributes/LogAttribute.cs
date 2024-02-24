@@ -22,13 +22,13 @@ internal class LoggerAttribute(ILogService _logService, LogManager _logManager) 
         {
             _logService.AddLogExit(MethodExitFactory.Create(executedAction.Exception));
 
-            _logService.Write();
+            Console.WriteLine(await _logService.Write());
         }
         else if (!LoggerConfiguration.IsLoggingOnlyOnExceptions)
         {
             _logService.AddLogExit(MethodExitFactory.Create(executedAction.Result));
-        
-            _logService.Write();
+
+            Console.WriteLine(await _logService.Write());
         }
     }
 }
