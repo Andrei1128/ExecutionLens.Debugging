@@ -8,3 +8,4 @@ Cazuri de utilizare
 6. Monitorizare si Anuntare - setare cazuri pt detectarea de comportament neasteptat
 7. Creare de scenarii
 8. Grafic geolocatie cu filtrare pe endpoint si data
+9. Full text search pentru loguri
