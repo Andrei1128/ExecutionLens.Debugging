@@ -22,13 +22,15 @@ internal class LoggerAttribute(ILogService _logService, LogManager _logManager) 
         {
             _logService.AddLogExit(MethodExitFactory.Create(executedAction.Exception));
 
-            Console.WriteLine(await _logService.Write());
+            var logId = await _logService.Write();
+            context.HttpContext.Items.TryAdd(nameof(logId), logId);
         }
         else if (!LoggerConfiguration.IsLoggingOnlyOnExceptions)
         {
             _logService.AddLogExit(MethodExitFactory.Create(executedAction.Result));
 
-            Console.WriteLine(await _logService.Write());
+            var logId = await _logService.Write();
+            context.HttpContext.Items.TryAdd(nameof(logId), logId);
         }
     }
 }
