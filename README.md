@@ -7,3 +7,4 @@ Cazuri de utilizare
 5. Creare grafice cu metode in care s-au aruncat exceptii pe baza logurilor vechi
 6. Monitorizare si Anuntare - setare cazuri pt detectarea de comportament neasteptat
 7. Creare de scenarii
+8. Grafic geolocatie cu filtrare pe endpoint si data
