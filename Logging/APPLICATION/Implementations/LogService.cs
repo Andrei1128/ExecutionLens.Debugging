@@ -1,5 +1,4 @@
 ﻿using PostMortem.Logging.APPLICATION.Contracts;
-using PostMortem.Logging.DOMAIN.Factories;
 using PostMortem.Common.DOMAIN.Models;
 using Common.PERSISTANCE.Contracts;
 
@@ -14,7 +13,14 @@ internal class LogService(ILogRepository _logRepository) : ILogService
     {
         bool isInRoot = Current is null;
 
-        Current = MethodLogFactory.Create(logEntry);
+        Current = new MethodLog() 
+        {
+            Class = logEntry.Class,
+            Method = logEntry.Method,
+            InputType = logEntry.Input?.GetType().ToString(),
+            Input = logEntry.Input,
+            EntryTime = logEntry.Time
+        };
 
         if (Root is null)
         {
@@ -35,7 +41,9 @@ internal class LogService(ILogRepository _logRepository) : ILogService
     {
         CallStack.Pop();
 
-        Current!.Exit = logExit;
+        Current!.OutputType = logExit.Output?.GetType().ToString();
+        Current!.Output = logExit.Output;
+        Current!.ExitTime = logExit.Time;
 
         if (CallStack.TryPeek(out MethodLog? current))
             Current = current;

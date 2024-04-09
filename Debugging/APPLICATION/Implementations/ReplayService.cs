@@ -16,12 +16,12 @@ internal class ReplayService(IReflectionService _reflectionService, ILogReposito
 
         Type type = classInstance.GetType();
 
-        MethodInfo method = type.GetMethod(log.Entry.Method)
-            ?? throw new Exception($"Method '{log.Entry.Method}' not found on Type '{log.Entry.Class}'!");
+        MethodInfo method = type.GetMethod(log.Method)
+            ?? throw new Exception($"Method '{log.Method}' not found on Type '{log.Class}'!");
 
-        if (log.Entry.Input is not null)
+        if (log.Input is not null)
         {
-            object[] normalizedParameters = method.NormalizeParametersType(log.Entry.Input);
+            object[] normalizedParameters = method.NormalizeParametersType(log.Input);
             method.Invoke(classInstance, normalizedParameters);
         }
         else

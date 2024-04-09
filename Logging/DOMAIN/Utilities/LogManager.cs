@@ -2,6 +2,6 @@
 
 internal class LogManager
 {
-    public bool IsLogging;
+    public bool IsLogging { get; private set; } = false;
     public void StartLogging() => IsLogging = true;
 }

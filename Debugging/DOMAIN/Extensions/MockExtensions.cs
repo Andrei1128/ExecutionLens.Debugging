@@ -12,13 +12,13 @@ internal static class MockExtensions
     {
         Mock mock = new()
         {
-            Class = log.Entry.Class,
+            Class = log.Class,
             Setups = [
                 new()
                 {
-                    Input = log.Entry.Input,
-                    Method = log.Entry.Method,
-                    Output = log.Exit.Output
+                    Input = log.Input,
+                    Method = log.Method,
+                    Output = log.Output
                 }]
         };
 
@@ -30,22 +30,22 @@ internal static class MockExtensions
 
     private static void AddInteraction(Mock mock, MethodLog interaction)
     {
-        Mock? existingMock = mock.Interactions.FirstOrDefault(cs => cs.Class == interaction.Entry.Class);
+        Mock? existingMock = mock.Interactions.FirstOrDefault(cs => cs.Class == interaction.Class);
 
         if (existingMock == null)
         {
             existingMock = new Mock
             {
-                Class = interaction.Entry.Class
+                Class = interaction.Class
             };
             mock.Interactions.Add(existingMock);
         }
 
         Setup methodSetup = new()
         {
-            Method = interaction.Entry.Method,
-            Input = interaction.Entry.Input,
-            Output = interaction.Exit.Output
+            Method = interaction.Method,
+            Input = interaction.Input,
+            Output = interaction.Output
         };
 
         existingMock.Setups.Add(methodSetup);
