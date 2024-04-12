@@ -1,4 +1,6 @@
-﻿namespace PostMortem.Common.DOMAIN.Models;
+﻿using Common.DOMAIN.Models;
+
+namespace PostMortem.Common.DOMAIN.Models;
 
 public class MethodLog
 {
@@ -14,6 +16,6 @@ public class MethodLog
     public string? OutputType { get; set; } = string.Empty;
     public object? Output { get; set; } = null;
 
-    public string[] Informations { get; set; } = [];
+    public List<InformationLog> Informations { get; set; } = [];
     public List<MethodLog> Interactions { get; set; } = [];
 }

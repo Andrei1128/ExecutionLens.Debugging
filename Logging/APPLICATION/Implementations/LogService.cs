@@ -1,6 +1,7 @@
 ﻿using PostMortem.Logging.APPLICATION.Contracts;
 using PostMortem.Common.DOMAIN.Models;
 using Common.PERSISTANCE.Contracts;
+using Common.DOMAIN.Models;
 
 namespace PostMortem.Logging.APPLICATION.Implementations;
 
@@ -48,6 +49,8 @@ internal class LogService(ILogRepository _logRepository) : ILogService
         if (CallStack.TryPeek(out MethodLog? current))
             Current = current;
     }
+
+    public void AddInformation(InformationLog log) => Current?.Informations.Add(log);
 
     public async Task<string> Write() => await _logRepository.Add(Root!);
 }

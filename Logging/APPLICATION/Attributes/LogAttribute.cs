@@ -4,12 +4,18 @@ using PostMortem.Logging.DOMAIN.Utilities;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc;
 using PostMortem.Logging.DOMAIN.Configurations;
+using Microsoft.Extensions.Options;
 
 namespace PostMortem.Logging;
 
 [AttributeUsage(AttributeTargets.Method)]
-internal class LoggerAttribute(ILogService _logService, LogManager _logManager) : Attribute, IAsyncActionFilter
+internal class LoggerAttribute(
+    ILogService _logService, 
+    LogManager _logManager , 
+    IOptionsMonitor<LoggerConfiguration> config) : Attribute, IAsyncActionFilter
 {
+    private readonly LoggerConfiguration _config = config.CurrentValue;
+
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
         _logManager.StartLogging();
@@ -25,7 +31,7 @@ internal class LoggerAttribute(ILogService _logService, LogManager _logManager) 
             var logId = await _logService.Write();
             context.HttpContext.Items.TryAdd(nameof(logId), logId);
         }
-        else if (!LoggerConfiguration.IsLoggingOnlyOnExceptions)
+        else if (!_config.LogOnlyOnException)
         {
             _logService.AddLogExit(MethodExitFactory.Create(executedAction.Result));
 

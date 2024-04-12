@@ -4,6 +4,9 @@ using PostMortem.Logging.APPLICATION.Implementations;
 using PostMortem.Logging.DOMAIN.Configurations;
 using Microsoft.Extensions.DependencyInjection;
 using PostMortem.Logging.DOMAIN.Utilities;
+using Logging.APPLICATION.Implementations;
+using Logging.APPLICATION.Contracts;
+using static PostMortem.Logging.DOMAIN.Configurations.LoggerConfiguration;
 
 namespace PostMortem.Logging;
 
@@ -40,13 +43,17 @@ public static partial class ServiceCollection
         ));
         return services;
     }
-    public static LoggerConfiguration AddLogger(this IServiceCollection services)
+    public static LoggerConfiguration AddLogger(this IServiceCollection services, Action<LoggerConfiguration>? configuration = null)
     {
-        services.AddSingleton<ProxyGenerator>();
+        services.Configure(configuration ??= defaultConfiguration => { });
+        services.AddScoped<ProxyGenerator>();
+
         services.AddScoped<IInterceptorService, InterceptorService>();
+        services.AddScoped<IInformationLogger, InformationLogger>();
         services.AddScoped<ILogService, LogService>();
         services.AddScoped<LogAttribute>();
         services.AddScoped<LogManager>();
+
         return new LoggerConfiguration();
     }
 }

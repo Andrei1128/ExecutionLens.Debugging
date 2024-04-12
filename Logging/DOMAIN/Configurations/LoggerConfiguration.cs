@@ -1,14 +1,10 @@
-﻿namespace PostMortem.Logging.DOMAIN.Configurations;
+﻿using Microsoft.Extensions.Logging;
+
+namespace PostMortem.Logging.DOMAIN.Configurations;
 
 public class LoggerConfiguration
 {
-    public static bool IsLoggingOnlyOnExceptions { get; private set; } = false;
-
-    internal LoggerConfiguration() { }
-
-    public LoggerConfiguration LogOnlyOnExceptions(bool flag = true)
-    {
-        IsLoggingOnlyOnExceptions = flag;
-        return this;
-    }
+    public bool LogOnlyOnException { get; set; } = false;
+    public bool LogToConsole { get; set; } = false;
+    public LogLevel MinimumLogLevel { get; set; } = LogLevel.Information;
 }
