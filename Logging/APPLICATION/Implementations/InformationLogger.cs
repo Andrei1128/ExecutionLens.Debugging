@@ -27,6 +27,11 @@ internal class InformationLogger(IOptionsMonitor<LoggerConfiguration> config, IL
             if (_config.LogToConsole)
             {
                 Console.WriteLine($"[{logLevel}] {formatter(state, exception)}");
+
+                if(exception is not null)
+                {
+                    Console.WriteLine(exception);
+                }
             }
         }
     }

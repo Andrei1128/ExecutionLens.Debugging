@@ -11,9 +11,9 @@ public class MethodLog
     public DateTime EntryTime { get; set; } = DateTime.Now;
     public DateTime ExitTime { get; set; } = DateTime.Now;
 
-    public string? InputType { get; set; } = string.Empty;
+    public string[]? InputTypes { get; set; } = null;
     public object[]? Input { get; set; } = null;
-    public string? OutputType { get; set; } = string.Empty;
+    public string? OutputType { get; set; } = null;
     public object? Output { get; set; } = null;
 
     public List<InformationLog> Informations { get; set; } = [];

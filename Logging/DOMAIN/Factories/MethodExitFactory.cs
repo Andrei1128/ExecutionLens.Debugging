@@ -25,6 +25,7 @@ internal class MethodExitFactory
         new()
         {
             Time = DateTime.Now,
+            OutputType = result.GetType().Name,
             Output = GetActionResultDetails(result)
         };
 
