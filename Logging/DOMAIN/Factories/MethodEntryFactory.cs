@@ -25,7 +25,7 @@ internal class MethodEntryFactory
             Time = DateTime.Now,
             Class = context.Controller.GetType().GetClassName(),
             Method = context.ActionDescriptor.GetMethodName(),
-            InputTypes = [.. context.ActionDescriptor.Parameters.Select(x => x.Name)],
+            InputTypes = [.. context.ActionDescriptor.Parameters.Select(x => x.GetType().Name)],
             Input = [.. context.ActionArguments.Values]
         };
 }
