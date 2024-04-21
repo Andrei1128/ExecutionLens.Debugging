@@ -22,8 +22,13 @@ internal static class MockExtensions
                 }]
         };
 
-        foreach (var interaction in log.Interactions)
-            AddInteraction(mock, interaction);
+        if (log.Interactions is not null)
+        {
+            foreach (var interaction in log.Interactions)
+            {
+                AddInteraction(mock, interaction);
+            }
+        }
 
         return mock;
     }

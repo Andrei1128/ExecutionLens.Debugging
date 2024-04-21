@@ -18,8 +18,8 @@ internal class LogService(ILogRepository _logRepository) : ILogService
         {
             Class = logEntry.Class,
             Method = logEntry.Method,
-            InputTypes = logEntry.InputTypes,
-            Input = logEntry.Input,
+            InputTypes = logEntry.InputTypes?.Length > 0 ? logEntry.InputTypes : null,
+            Input = logEntry.Input?.Length > 0 ? logEntry.Input : null,
             EntryTime = logEntry.Time
         };
 
@@ -29,10 +29,12 @@ internal class LogService(ILogRepository _logRepository) : ILogService
         }
         else if (isInRoot || !CallStack.TryPeek(out MethodLog? parent))
         {
+            Root.Interactions ??= [];
             Root.Interactions.Add(Current);
         }
         else
         {
+            parent.Interactions ??= [];
             parent.Interactions.Add(Current);
         }
 
@@ -50,7 +52,14 @@ internal class LogService(ILogRepository _logRepository) : ILogService
             Current = current;
     }
 
-    public void AddInformation(InformationLog log) => Current?.Informations.Add(log);
+    public void AddInformation(InformationLog log)
+    {
+        if (Current is not null)
+        {
+            Current.Informations ??= [];
+            Current.Informations.Add(log);
+        }
+    }
 
     public async Task<string> Write() => await _logRepository.Add(Root!);
 }
