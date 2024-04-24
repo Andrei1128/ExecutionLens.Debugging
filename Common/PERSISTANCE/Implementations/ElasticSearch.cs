@@ -21,24 +21,18 @@ internal class ElasticSearch(IElasticClient client, string index) : ILogReposito
         return rootId;
     }
 
-    private async Task IndexChildrens(List<MethodLog>? childrens, string parentId)
+    private async Task IndexChildrens(List<MethodLog>? childrens, string path)
     {
         if (childrens is null)
             return;
 
         foreach (var child in childrens)
         {
+            child.NodePath = path;
+
             var indexResponse = await _client.IndexAsync(child, idx => idx.Index(index));
 
-            ClosureEntry closure = new()
-            {
-                ParentId = parentId,
-                ChildId = indexResponse.Id
-            };
-
-            await _client.IndexAsync(closure, idx => idx.Index($"{index}_closure"));
-
-            await IndexChildrens(child.Interactions, indexResponse.Id);
+            await IndexChildrens(child.Interactions, $"{path}/{indexResponse.Id}");
         }
     }
 
