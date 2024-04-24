@@ -18,7 +18,6 @@ internal class LogService(ILogRepository _logRepository) : ILogService
         {
             Class = logEntry.Class,
             Method = logEntry.Method,
-            InputTypes = logEntry.InputTypes?.Length > 0 ? logEntry.InputTypes : null,
             Input = logEntry.Input?.Length > 0 ? logEntry.Input : null,
             EntryTime = logEntry.Time
         };
@@ -44,8 +43,8 @@ internal class LogService(ILogRepository _logRepository) : ILogService
     {
         CallStack.Pop();
 
-        Current!.OutputType = logExit.OutputType ?? logExit.Output?.GetType().Name;
         Current!.Output =  logExit.Output;
+        Current!.HasException = logExit.HasException;
         Current!.ExitTime = logExit.Time;
 
         if (CallStack.TryPeek(out MethodLog? current))
