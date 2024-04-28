@@ -17,7 +17,9 @@ internal class MethodExitFactory
             output = new Property()
             {
                 Type = invocation.ReturnValue.GetType().Name,
-                Value = JsonConvert.SerializeObject(invocation.ReturnValue, Formatting.Indented)
+                Value = invocation.ReturnValue is string stringValue
+                    ? stringValue
+                    : JsonConvert.SerializeObject(invocation.ReturnValue, Formatting.Indented)
             };
         };
 

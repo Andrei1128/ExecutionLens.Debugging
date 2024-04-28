@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using PostMortem.Common.DOMAIN.Models;
 using Common.DOMAIN.Models;
 using Newtonsoft.Json;
-using Nest;
 
 namespace PostMortem.Logging.DOMAIN.Factories;
 
@@ -21,7 +20,9 @@ internal class MethodEntryFactory
             input[i] = new Property()
             {
                 Type = invocation.Arguments[i].GetType().Name,
-                Value = JsonConvert.SerializeObject(invocation.Arguments[i], Formatting.Indented)
+                Value = invocation.Arguments[i] is string stringValue 
+                    ? stringValue 
+                    : JsonConvert.SerializeObject(invocation.Arguments[i], Formatting.Indented)
             };
         }
 
@@ -37,7 +38,7 @@ internal class MethodEntryFactory
     public static MethodEntry Create(ActionExecutingContext context)
     {
         object[] values = [.. context.ActionArguments.Values];
-        string[] types = [.. context.ActionDescriptor.Parameters.Select(x => x.GetType().Name)];
+        string[] types = [.. context.ActionDescriptor.Parameters.Select(x => x.ParameterType.Name)];
 
         int length = values.Length;
 
@@ -48,7 +49,9 @@ internal class MethodEntryFactory
             input[i] = new Property()
             {
                 Type = types[i],
-                Value = JsonConvert.SerializeObject(values[i], Formatting.Indented)
+                Value = values[i] is string stringValue 
+                    ? stringValue 
+                    : JsonConvert.SerializeObject(values[i], Formatting.Indented)
             };
         }
 
@@ -57,6 +60,7 @@ internal class MethodEntryFactory
             Time = DateTime.Now,
             Class = context.Controller.GetType().GetClassName(),
             Method = context.ActionDescriptor.GetMethodName(),
+            Input = input
         };
     }
 }
