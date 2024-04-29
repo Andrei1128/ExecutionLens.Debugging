@@ -63,7 +63,7 @@ internal class ReflectionService : IReflectionService
         return normalizedParameters;
     }
 
-    private IEnumerable<Type> GetTypesExcluding(IEnumerable<Type> types, List<object> excluding)
+    private IEnumerable<Type> GetTypesExcluding(this IEnumerable<Type> types, List<object> excluding)
     {
         IEnumerable<Type> excludingTypes =
             from type in types
