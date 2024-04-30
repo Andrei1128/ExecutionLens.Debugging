@@ -4,5 +4,5 @@ namespace ExecutionLens.Debugging.APPLICATION.Contracts;
 
 public interface ILogRepository
 {
-    Task<MethodLog> Get(string id);
+    Task<MethodLog?> Get(string id);
 }

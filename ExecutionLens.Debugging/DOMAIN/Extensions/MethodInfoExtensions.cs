@@ -4,7 +4,7 @@ namespace ExecutionLens.Debugging.DOMAIN.Extensions;
 
 internal static class MethodInfoExtensions
 {
-    public static object[] NormalizeParametersType(this MethodInfo methodInfo, params object[] parameters)
+    public static object[] NormalizeParametersType(this MethodInfo methodInfo, object[] parameters)
     {
         object[] normalizedParameters = new object[parameters.Length];
 

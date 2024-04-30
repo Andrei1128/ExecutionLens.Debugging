@@ -2,7 +2,6 @@
 using ExecutionLens.Debugging.APPLICATION.Contracts;
 using ExecutionLens.Debugging.DOMAIN.Extensions;
 using ExecutionLens.Debugging.DOMAIN.Models;
-using System.Reflection;
 
 namespace ExecutionLens.Debugging.APPLICATION.Implementations;
 
@@ -12,16 +11,22 @@ internal class ReflectionService : IReflectionService
     
     public object CreateInstance(Mock mock, Mock? parent = null)
     {
-        Type classType = mock.GetClassType();
+        
+        Type classType = Type.GetType(mock.Class)
+            ?? throw new Exception($"Type `{mock.Class}` not found!");
 
         List<object> dependencies = [];
 
         foreach (Mock interaction in mock.Interactions)
         {
-            dependencies.Add(CreateInstance(interaction, mock));
+            object interactionInstance = CreateInstance(interaction, mock);
+
+            dependencies.Add(interactionInstance);
         }
 
-        IEnumerable<Type> dummyDependencies = GetTypesExcluding(GetConstructorParametersTypes(classType), dependencies);
+        IEnumerable<Type> constructorParametersTypes = classType.GetConstructorParametersTypes();
+
+        IEnumerable<Type> dummyDependencies = constructorParametersTypes.GetTypesExcluding([.. dependencies]);
 
         foreach (Type dependency in dummyDependencies)
         {
@@ -36,7 +41,7 @@ internal class ReflectionService : IReflectionService
         }
 
         object instance = Activator.CreateInstance(classType, [.. dependencies])
-            ?? throw new Exception($"Could not create instance for '{classType}'!");
+            ?? throw new Exception($"Could not create instance for `{classType}`!");
 
         if (parent is null)
         {
@@ -45,47 +50,12 @@ internal class ReflectionService : IReflectionService
 
         InterceptorService interceptor = new(mock.Setups);
 
-        Type interfaceType = GetConstructorParametersTypes(parent.GetClassType()).First(p => p.IsAssignableFrom(classType));
+        Type parentClassType = Type.GetType(parent.Class)
+            ?? throw new Exception($"Type `{mock.Class}` not found!");
+
+        Type interfaceType = parentClassType.GetConstructorParametersTypes()
+                                            .First(p => p.IsAssignableFrom(classType));
 
         return proxyGenerator.CreateInterfaceProxyWithTarget(interfaceType, instance, interceptor);
-    }
-
-    public object[] NormalizeParametersType(MethodInfo methodInfo, params object[] parameters)
-    {
-        object[] normalizedParameters = new object[parameters.Length];
-
-        ParameterInfo[] parameterInfos = methodInfo.GetParameters();
-        for (int i = 0; i < parameters.Length; i++)
-        {
-            normalizedParameters[i] = Convert.ChangeType(parameters[i], parameterInfos[i].ParameterType);
-        }
-
-        return normalizedParameters;
-    }
-
-    private IEnumerable<Type> GetTypesExcluding(this IEnumerable<Type> types, List<object> excluding)
-    {
-        IEnumerable<Type> excludingTypes =
-            from type in types
-            where !excluding.Any(x => type.IsAssignableFrom(x.GetType()))
-            select type;
-
-        return excludingTypes ?? [];
-    }
-
-    private IEnumerable<Type> GetConstructorParametersTypes(Type classType)
-    {
-        ConstructorInfo[] constructors = classType.GetConstructors();
-
-        if (constructors.Length != 0)
-        {
-            ConstructorInfo constructor = constructors
-                .OrderByDescending(c => c.GetParameters().Length)
-                .First();
-
-            return constructor.GetParameters().Select(x => x.ParameterType);
-        }
-
-        return [];
     }
 }

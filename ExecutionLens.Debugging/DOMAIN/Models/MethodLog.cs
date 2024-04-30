@@ -1,7 +1,4 @@
-﻿using Nest;
-using Newtonsoft.Json;
-
-namespace ExecutionLens.Debugging.DOMAIN.Models;
+﻿namespace ExecutionLens.Debugging.DOMAIN.Models;
 
 public class MethodLog
 {
@@ -17,8 +14,6 @@ public class MethodLog
     public Property[]? Input { get; set; } = null;
     public Property? Output { get; set; } = null;
 
-    public List<InformationLog>? Informations { get; set; } = null;
-
-    [Ignore, JsonIgnore]
-    public List<MethodLog>? Interactions { get; set; } = null;
+    public List<InformationLog> Informations { get; set; } = [];
+    public List<MethodLog> Interactions { get; set; } = [];
 }

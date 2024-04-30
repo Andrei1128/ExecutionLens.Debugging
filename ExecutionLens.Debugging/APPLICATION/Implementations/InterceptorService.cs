@@ -20,7 +20,7 @@ internal class InterceptorService(List<Setup> setups) : IInterceptor
             {
                 object[] normalizedParameters = invocation.Method.NormalizeParametersType(setup.Input);
 
-                for (int i = 0; i < normalizedParameters?.Length; i++)
+                for (int i = 0; i < normalizedParameters.Length; i++)
                 {
                     invocation.SetArgumentValue(i, normalizedParameters[i]);
                 }
@@ -30,6 +30,6 @@ internal class InterceptorService(List<Setup> setups) : IInterceptor
             invocation.Proceed();
         }
         else
-            throw new Exception($"An exception was thrown during the original execution and has not been triggered now, or '{invocation.Method.Name}' has no setups registered!");
+            throw new Exception($"An exception was thrown during the original execution and has not been triggered now, or `{invocation.Method.Name}` has no setups registered!");
     }
 }

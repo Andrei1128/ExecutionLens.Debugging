@@ -2,23 +2,22 @@
 
 namespace ExecutionLens.Debugging.DOMAIN.Extensions;
 
-internal static class MockExtensions
+internal static class MethodLogExtensions
 {
-    public static Type GetClassType(this Mock payload)
-        => Type.GetType(payload.Class) ?? throw new Exception($"Type '{payload.Class}' not found!");
-
     public static Mock ToMock(this MethodLog log)
     {
         Mock mock = new()
         {
             Class = log.Class,
-            Setups = [
-                new()
+            Setups =
+            [
+                new Setup()
                 {
                     Input = log.Input,
                     Method = log.Method,
                     Output = log.Output
-                }]
+                }
+            ]
         };
 
         if (log.Interactions is not null)
@@ -36,7 +35,7 @@ internal static class MockExtensions
     {
         Mock? existingMock = mock.Interactions.FirstOrDefault(cs => cs.Class == interaction.Class);
 
-        if (existingMock == null)
+        if (existingMock is null)
         {
             existingMock = new Mock
             {
@@ -55,6 +54,8 @@ internal static class MockExtensions
         existingMock.Setups.Add(methodSetup);
 
         foreach (MethodLog nestedInteraction in interaction.Interactions)
+        {
             AddInteraction(existingMock, nestedInteraction);
+        }
     }
 }
