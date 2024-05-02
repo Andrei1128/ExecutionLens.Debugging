@@ -40,7 +40,9 @@ internal class ReflectionService : IReflectionService
             }
         }
 
-        object instance = Activator.CreateInstance(classType, [.. dependencies])
+        IEnumerable<object> sortedDependencies = dependencies.SortAs(constructorParametersTypes);
+
+        object instance = Activator.CreateInstance(classType, [.. sortedDependencies])
             ?? throw new Exception($"Could not create instance for `{classType}`!");
 
         if (parent is null)

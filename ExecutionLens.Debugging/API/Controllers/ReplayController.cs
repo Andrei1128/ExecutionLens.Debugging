@@ -24,7 +24,6 @@ public class ReplayController(IReplayService _replayService) : ControllerBase
         {
             ResultStatus.Success => Ok("Successfully replayed!"),
             ResultStatus.NotFound => NotFound($"Log with id `{logId}` not found!"),
-            ResultStatus.Exception => BadRequest("Unexpected exception occurred!"),
             _ => StatusCode(StatusCodes.Status500InternalServerError)
         };
     }
