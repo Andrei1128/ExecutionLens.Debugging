@@ -10,20 +10,20 @@ namespace ExecutionLens.Debugging.API.Controllers;
 [Route("[controller]")]
 public class ReplayController(IReplayService _replayService) : ControllerBase
 {
-    [HttpPost]
-    public async Task<IActionResult> Replay(string logId)
+    [HttpPost("{id}")]
+    public async Task<IActionResult> Replay(string id)
     {
         if (!Debugger.IsAttached)
         {
             return BadRequest("Debugger is not attached!");
         }
 
-        ResultStatus status = await _replayService.Replay(logId);
+        ResultStatus status = await _replayService.Replay(id);
 
         return status switch
         {
             ResultStatus.Success => Ok("Successfully replayed!"),
-            ResultStatus.NotFound => NotFound($"Log with id `{logId}` not found!"),
+            ResultStatus.NotFound => NotFound($"Log with id `{id}` not found!"),
             _ => StatusCode(StatusCodes.Status500InternalServerError)
         };
     }
