@@ -4,7 +4,7 @@ namespace ExecutionLens.Debugging.DOMAIN.Extensions;
 
 internal static class TypeExtensions
 {
-    public static IEnumerable<Type> GetConstructorParametersTypes(this Type type)
+    public static List<Type> GetConstructorParametersTypes(this Type type)
     {
         ConstructorInfo[] constructors = type.GetConstructors();
 
@@ -14,19 +14,26 @@ internal static class TypeExtensions
                 .OrderByDescending(c => c.GetParameters().Length)
                 .First();
 
-            return constructor.GetParameters().Select(x => x.ParameterType);
+            return constructor.GetParameters()
+                              .Select(x => x.ParameterType)
+                              .ToList();
         }
 
         return [];
     }
 
-    public static IEnumerable<Type> GetTypesExcluding(this IEnumerable<Type> types, object[] excluding)
+    public static List<Type> GetTypesExcluding(this List<Type> types, object[] excluding)
     {
         IEnumerable<Type> excludingTypes =
             from type in types
-            where !excluding.Any(x => type.IsAssignableFrom(x.GetType()))
+            where excluding.Any(x => type.IsAssignableFrom(x?.GetType()))
             select type;
 
-        return excludingTypes ?? [];
+        return excludingTypes.ToList() ?? [];
+    }
+
+    public static int GetIndexOf(this List<Type> types, Type type)
+    {
+        return types.FindIndex(t => t == type || type.IsAssignableTo(t));
     }
 }

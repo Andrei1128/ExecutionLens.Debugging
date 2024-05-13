@@ -11,38 +11,41 @@ internal class ReflectionService : IReflectionService
     
     public object CreateInstance(Mock mock, Mock? parent = null)
     {
-        
         Type classType = Type.GetType(mock.Class)
             ?? throw new Exception($"Type `{mock.Class}` not found!");
 
-        List<object> dependencies = [];
+        List<Type> constructorParametersTypes = classType.GetConstructorParametersTypes();
+
+        object[] dependencies = new object[constructorParametersTypes.Count];
 
         foreach (Mock interaction in mock.Interactions)
         {
             object interactionInstance = CreateInstance(interaction, mock);
 
-            dependencies.Add(interactionInstance);
+            Type interactionType = Type.GetType(interaction.Class)
+                ?? throw new Exception($"Type `{interaction.Class}` not found!");
+
+            int index = constructorParametersTypes.GetIndexOf(interactionType);
+            dependencies[index] = interactionInstance;
         }
 
-        IEnumerable<Type> constructorParametersTypes = classType.GetConstructorParametersTypes();
-
-        IEnumerable<Type> dummyDependencies = constructorParametersTypes.GetTypesExcluding([.. dependencies]);
+        List<Type> dummyDependencies = constructorParametersTypes.GetTypesExcluding(dependencies);
 
         foreach (Type dependency in dummyDependencies)
         {
-            if(dependency.IsInterface)
+            int index = constructorParametersTypes.GetIndexOf(dependency);
+
+            if (dependency.IsInterface)
             {
-                dependencies.Add(proxyGenerator.CreateInterfaceProxyWithoutTarget(dependency));
+                dependencies[index] = proxyGenerator.CreateInterfaceProxyWithoutTarget(dependency);
             }
             else
             {
-                dependencies.Add(proxyGenerator.CreateClassProxy(dependency));
+                dependencies[index] = proxyGenerator.CreateClassProxy(dependency);
             }
         }
 
-        IEnumerable<object> sortedDependencies = dependencies.SortAs(constructorParametersTypes);
-
-        object instance = Activator.CreateInstance(classType, [.. sortedDependencies])
+        object instance = Activator.CreateInstance(classType, dependencies)
             ?? throw new Exception($"Could not create instance for `{classType}`!");
 
         if (parent is null)
