@@ -26,7 +26,7 @@ internal static class TypeExtensions
     {
         IEnumerable<Type> excludingTypes =
             from type in types
-            where excluding.Any(x => type.IsAssignableFrom(x?.GetType()))
+            where !excluding.Any(x => type.IsAssignableFrom(x?.GetType()))
             select type;
 
         return excludingTypes.ToList() ?? [];

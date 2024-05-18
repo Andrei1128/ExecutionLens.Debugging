@@ -7,7 +7,8 @@ namespace ExecutionLens.Debugging.APPLICATION.Implementations;
 
 internal class ReflectionService : IReflectionService
 {
-    private readonly ProxyGenerator proxyGenerator = new();
+    private readonly IProxyGenerator _proxyGenerator = new ProxyGenerator();
+    private readonly IInterceptor _nullInterceptor = new NullInterceptor();
     
     public object CreateInstance(Mock mock, Mock? parent = null)
     {
@@ -37,11 +38,11 @@ internal class ReflectionService : IReflectionService
 
             if (dependency.IsInterface)
             {
-                dependencies[index] = proxyGenerator.CreateInterfaceProxyWithoutTarget(dependency);
+                dependencies[index] = _proxyGenerator.CreateInterfaceProxyWithoutTarget(dependency, _nullInterceptor);
             }
             else
             {
-                dependencies[index] = proxyGenerator.CreateClassProxy(dependency);
+                dependencies[index] = _proxyGenerator.CreateClassProxy(dependency, _nullInterceptor);
             }
         }
 
@@ -53,7 +54,7 @@ internal class ReflectionService : IReflectionService
             return instance;
         }
 
-        InterceptorService interceptor = new(mock.Setups);
+        IInterceptor interceptor = new ConsistencyInterceptor(mock.Setups);
 
         Type parentClassType = Type.GetType(parent.Class)
             ?? throw new Exception($"Type `{mock.Class}` not found!");
@@ -61,6 +62,6 @@ internal class ReflectionService : IReflectionService
         Type interfaceType = parentClassType.GetConstructorParametersTypes()
                                             .First(p => p.IsAssignableFrom(classType));
 
-        return proxyGenerator.CreateInterfaceProxyWithTarget(interfaceType, instance, interceptor);
+        return _proxyGenerator.CreateInterfaceProxyWithTarget(interfaceType, instance, interceptor);
     }
 }

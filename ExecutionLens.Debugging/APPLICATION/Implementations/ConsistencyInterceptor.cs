@@ -5,16 +5,16 @@ using System.Diagnostics;
 
 namespace ExecutionLens.Debugging.APPLICATION.Implementations;
 
-internal class InterceptorService(List<Setup> setups) : IInterceptor
+internal class ConsistencyInterceptor(List<Setup> _setups) : IInterceptor
 {
     [DebuggerStepThrough]
     public void Intercept(IInvocation invocation)
     {
-        Setup? setup = setups.FirstOrDefault();
+        Setup? setup = _setups.FirstOrDefault();
 
         if (setup?.Method == invocation.Method.Name)
         {
-            setups.RemoveAt(0);
+            _setups.RemoveAt(0);
 
             if (setup.Input is not null)
             {
