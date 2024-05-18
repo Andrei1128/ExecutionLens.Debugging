@@ -15,9 +15,7 @@ internal static class MethodInfoExtensions
 
         for (int i = 0; i < parameters.Length; i++)
         {
-            normalizedParameters[i] = parameters[i].Type == "String" 
-                                    ? parameters[i].Value 
-                                    : JsonConvert.DeserializeObject(parameters[i].Value, parameterInfos[i].ParameterType);
+            normalizedParameters[i] = JsonConvert.DeserializeObject(parameters[i].Value, parameterInfos[i].ParameterType);
         }
 
         return normalizedParameters;
