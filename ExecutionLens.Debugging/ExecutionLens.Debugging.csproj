@@ -4,6 +4,9 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Description>A package which use structured logs to reexecute .NET APIs calls.</Description>
+    <RepositoryUrl>https://github.com/Andrei1128/ExecutionLens.Debugging</RepositoryUrl>
   </PropertyGroup>
 
 	<ItemGroup>
