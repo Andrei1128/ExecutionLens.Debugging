@@ -7,7 +7,7 @@ namespace ExecutionLens.Debugging.APPLICATION.Implementations;
 
 internal class ConsistencyInterceptor(List<Setup> _setups) : IInterceptor
 {
-    [DebuggerStepThrough]
+    [DebuggerNonUserCode]
     public void Intercept(IInvocation invocation)
     {
         Setup? setup = _setups.FirstOrDefault();
