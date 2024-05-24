@@ -1,6 +1,7 @@
 ﻿using Castle.DynamicProxy;
 using ExecutionLens.Debugging.DOMAIN.Extensions;
 using ExecutionLens.Debugging.DOMAIN.Models;
+using Newtonsoft.Json;
 using System.Diagnostics;
 
 namespace ExecutionLens.Debugging.APPLICATION.Implementations;
@@ -26,8 +27,11 @@ internal class ConsistencyInterceptor(List<Setup> _setups) : IInterceptor
                 }
             }
 
-            invocation.ReturnValue = setup.Output?.Value;
             invocation.Proceed();
+
+            invocation.ReturnValue = setup.Output is not null
+                ? JsonConvert.DeserializeObject(setup.Output.Value, invocation.Method.ReturnType)
+                : null;
         }
         else
             throw new Exception($"An exception was thrown during the original execution and has not been triggered now, or `{invocation.Method.Name}` has no setups registered!");
