@@ -59,3 +59,9 @@ The core functionality is handled by the **IReplayService**, which retrieves the
 - **Execution Reproduction**: The replay service ensures that the replayed execution is identical to the original, using the original method inputs and outputs for the replayed calls.
 
 - **Business Logic Testing**: This is ideal for testing complex business logic since it replicates real-world scenarios and data exactly as they occurred.
+
+## GitHub Repository for Logging Executions
+
+For a package that can log executions, visit the following GitHub repository:
+
+[ExecutionLens.Logging GitHub Repository](https://github.com/Andrei1128/ExecutionLens.Logging)
